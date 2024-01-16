@@ -1,6 +1,8 @@
 //THIS IS WHERE WE PUT OUR COMPONENTS IN 
 import React, { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home'
+import LoginSignup from './components/LoginSignup';
 function App() {
 
   /*
@@ -20,7 +22,14 @@ function App() {
 
   return (
     <div>
-      <Home />
+      
+      <Router>
+        <Routes>
+      
+          <Route index element={<Home />} />
+          <Route exact path='/login' element={<LoginSignup/>}/>
+        </Routes>
+      </Router>    
     </div>
   )
 }
