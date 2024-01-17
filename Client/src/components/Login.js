@@ -1,6 +1,14 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
+import AuthContext from '../context/AuthProvider';//authContext not provider like index
+import axios from '../api/axios';
+
+//uri for backedn api
+const LOGIN_URL = '/auth';
 
 function Login() {
+
+    //loading in setAuth from AuthProvider
+    const { setAuth } = useContext(AuthContext);
     const userRef = useRef();
     const errRef = useRef();
 
@@ -23,9 +31,12 @@ function Login() {
         setErrMsg('')
     }, [user, pwd])
 
+    //where the api functionality is
     //e = event(passed if by default)
     const handleSubmit = async (e) => {
         //page doesnt reload when submit
+
+
         e.preventDefault();
         setSuccess(true)
     }
