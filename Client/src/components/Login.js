@@ -35,10 +35,50 @@ function Login() {
     //e = event(passed if by default)
     const handleSubmit = async (e) => {
         //page doesnt reload when submit
-
-
         e.preventDefault();
-        setSuccess(true)
+
+        try {
+            //making api call to backend
+                //if backend expecting user & pwd then leave like that
+                //else: ({userName: user, password:pwd})
+                    //userName & password is what the API is expecting
+            const response = await axios.post(LOGIN_URL, 
+                JSON.stringify({user, pwd}),
+                {
+                    //saying the request is in JSON format
+                    headers: { 'Content-Type': 'application/json'},
+                    withCredentials: true
+                }
+            );
+            //? : avoiding errors: if response is not null then check data if data is null and so on.
+                //if any are null then accessToken = undefined
+            const accessToken = response?.data?.accessToken;
+
+            //roles(made up) for the node.js backend (might not for us)
+            const roles = response?.data?.roles;
+              
+            //storing in global auth object
+            setAuth({ user, pwd, roles, accessToken});
+            setUser('');
+            setPwd('');
+            setSuccess(true);
+        } catch (err) {
+            if(!err?.response) {
+                setErrMsg('No Server Response')
+            } else if (err.response?.status === 400) {      //400 = missing info
+                setErrMsg('Missing Username or Password');
+            } else if (err.response?.status === 401) {
+                setErrMsg('Unauthorized');
+            } else {
+                setErrMsg('Login Failed');
+            }
+            //setting focus on error display - so screen reader can read the information
+                //assertive so announced immediatly
+            errRef.current.focus();
+        }
+        //axios: will throw an error if there is one, so dont have to fetch to check
+            //also dont have to convert the response to JSON (axios does that)
+        
     }
 
     return (
