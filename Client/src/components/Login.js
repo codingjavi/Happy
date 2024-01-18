@@ -8,6 +8,7 @@ const LOGIN_URL = '/auth';
 function Login() {
 
     //loading in setAuth from AuthProvider
+        //to store STORING users authentication status and other info
     const { setAuth } = useContext(AuthContext);
     const userRef = useRef();
     const errRef = useRef();
@@ -26,7 +27,7 @@ function Login() {
     }, [])
 
     //resets the error msg when user CHANGES usernname or password
-        //BC duh they're chainging it so remove it
+        //BC they're chainging it so remove it
     useEffect(() => {
         setErrMsg('')
     }, [user, pwd])
@@ -57,7 +58,10 @@ function Login() {
             //roles(made up) for the node.js backend (might not for us)
             const roles = response?.data?.roles;
               
+            //SETTING AUTH (auth provider)
             //storing in global auth object
+            //STORING ALL OF USERS INFO
+                //to conditionally render components, manage user sessions, control access to certain routes
             setAuth({ user, pwd, roles, accessToken});
             setUser('');
             setPwd('');
@@ -102,7 +106,7 @@ function Login() {
                     onChange={(e) => setUser(e.target.value)}
                     required
                 />
-                {/*never going to set focus on password*/ }
+                {/*never going to set focus on password, just tab to it*/ }
                 <label htmlFor='password'>Password</label>
                 <input 
                     type="password"

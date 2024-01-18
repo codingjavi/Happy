@@ -1,6 +1,7 @@
 //using the context API
 import { createContext, useState } from "react";
 
+//MANAGES auth state for entire app
 const AuthContext = createContext({});
 //context provides a way to pass data through components W OUT PROPS
 
