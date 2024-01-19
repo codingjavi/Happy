@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
 import AuthContext from '../context/AuthProvider';//authContext not provider like index
 import axios from '../api/axios';
+import { Link } from 'react-router-dom';
 
 //uri for backedn api
 const LOGIN_URL = '/auth';
@@ -120,7 +121,7 @@ function Login() {
             <p>
                 Need an Account? <br />
                 <span className='line'>
-                    {/* Route link here for register */}
+                    <Link to = "/register"> Click Here!</Link>
                 </span>
             </p>
         </section>

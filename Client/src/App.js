@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home'
 import Login from './components/Login';
+import Register from './components/Register';
 function App() {
 
   /*
@@ -28,6 +29,7 @@ function App() {
       
           <Route index element={<Home />} />
           <Route exact path='/login' element={<Login/>}/>
+          <Route exact path='/register' element={<Register/>}/>
         </Routes>
       </Router>    
     </div>
