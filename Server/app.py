@@ -1,5 +1,5 @@
 from crypt import methods
-from flask import Flask, render_template, url_for, request, flash, session, redirect, g
+from flask import Flask, render_template, url_for, request, flash, session, redirect, jsonify
 from flask_sqlalchemy import SQLAlchemy
 #user object inherithing from UxerMixin(helps users log in)
 from flask_login import UserMixin
@@ -8,6 +8,7 @@ from sqlalchemy.sql import func
 #encrypts passwords 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user, LoginManager
+from flask_cors import CORS, cross_origin
 
 import urllib.request
 from PIL import Image
@@ -21,7 +22,7 @@ import io
 
 
 app = Flask(__name__)
-
+cors = CORS(app, resources={r'/api/*': {'origins': 'http://localhost:3000'}})
 
 #storing databse in this folder
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
@@ -715,11 +716,23 @@ def login():
     #dont really need current_user because we aren't using nav bar here
 
 
-
+@app.route('/api/data', methods=['OPTIONS'])
+def handle_options_request():
+    response = jsonify()
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    return response
 
 #creating register page
-@app.route("/register", methods = ['GET', 'POST'])
+@app.route("/api/register", methods = ['GET', 'POST'])
 def register():
+    print("TEST, TEST, TEST")
+    data = request.get_json()
+    print(data)
+    # Process the data as needed
+    return jsonify({'message': 'POST request received successfully'})
+    '''
     if request.method == 'POST':
         #getting the forms
         email = request.form.get('email')
@@ -760,7 +773,7 @@ def register():
                 login_user(new_user, remember=True)
                 flash("Account created", category="success")
                 return redirect("/home")
-    return render_template("register.html", user = current_user)
+    return render_template("register.html", user = current_user)'''
     #don't really need current_user here because we're not showing navbar
 
 @app.route("/logout")

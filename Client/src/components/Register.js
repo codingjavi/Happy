@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
   //{}: 9 - 24 chars long
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
-const REGISTER_URL = '/register'; //to make api call to backend
+const REGISTER_URL = '/api/register'; //to make api call to backend
 
 
 function Register() {
@@ -74,17 +74,19 @@ function Register() {
       setErrMsg("Invalid Entry");
       return;
     }
+    console.log(JSON.stringify({user, pwd}));
 
     try {
       //making api call to backend
           //if backend expecting user & pwd then leave like that
           //else: ({userName: user, password:pwd})
               //userName & password is what the API is expecting
+      console.log(JSON.stringify({user, pwd}))
       const response = await axios.post(REGISTER_URL, 
           JSON.stringify({user, pwd}),
           {
               //saying the request is in JSON format
-              headers: { 'Content-Type': 'application/json'},
+              headers: { 'Content-Type': 'application/json'}, 
               withCredentials: true
           }
       );
@@ -113,7 +115,7 @@ function Register() {
         //setting focus on error display - so screen reader can read the information
             //assertive so announced immediatly
         errRef.current.focus();
-  }
+      }
 
 
   }
@@ -232,7 +234,7 @@ function Register() {
               </p>
 
 
-              <button disabled={!validName || !validPwd || !validPwd ? true : false}>Sign Up</button>
+              <button disabled={!validName || !validPwd || !validMatch ? true : false}>Sign Up</button>
           </form>
           <p>
             Already registered? <br />
