@@ -1,5 +1,5 @@
 from crypt import methods
-from flask import Flask, render_template, url_for, request, flash, session, redirect, jsonify, make_response, Blueprint
+from flask import Flask, render_template, url_for, request, flash, session, redirect, jsonify, make_response, Blueprint, abort
 from flask_sqlalchemy import SQLAlchemy
 #user object inherithing from UxerMixin(helps users log in)
 from flask_login import UserMixin
@@ -767,63 +767,44 @@ def after_request_func(response):
 @cross_origin()
 def register():
     
-    
-    print("TEST, TEST, TEST")
     data = request.get_json()
+    #print(data['user'])
     #print(data)
     # Process the data as needed
     response =  jsonify({'message': 'POST request received successfully'})
     #response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-    '''
+    
+    
     if request.method == 'POST':
         #getting the forms
-        email = request.form.get('email')
-        name = request.form.get('name')
-        password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
+        userName = data['user']
+        name = "Joe"
+        password1 = data['pwd']
+        #name = request.form.get('name')
 
         #checking to see if email already exist by comparing it to all emails in database
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=userName).first()
 
         #if inputted an already exisisting email in database
         if user:
-            flash('Email already exists', category = 'error')
-
-        #too short of email
-        if len(email) < 4:
-            #flashing messages
-            flash("Email must be greater than 4 charaters", category= "error")
-        #too short of a name
-        elif len(name) < 2:
-            flash("name must be greater than 1 charater", category= "error")
-        #password doesnt confirm
-        elif password1 != password2:
-            flash("passwords must be the same", category= "error")
-        #password too short
-        elif len(password1) < 7:
-            flash("Password must be greater than 7 charaters", category= "error")
-        #if input is adequate pass to database
+            abort(409, description="Username already exists")
+            #flash('Email already exists', category = 'error')
         else:
             #creating new user object by using User class
                 #hashing password 'sha256' hashing algorith
             #if user definately not exist then put them in database
                 #if an account email doesn't have the same email then make database
-            if db.session.query(User).filter_by(email=email).count() < 1:
-                new_user = User(email=email, name=name, password=password1)
+            if db.session.query(User).filter_by(email=userName).count() < 1:
+                new_user = User(email=userName, name=name, password=password1)
                 db.session.add(new_user)
                 db.session.commit()
                 login_user(new_user, remember=True)
-                flash("Account created", category="success")
-                return redirect("/home")
-    return render_template("register.html", user = current_user)'''
-    #don't really need current_user here because we're not showing navbar
-def _build_cors_preflight_response():
-    response = make_response()
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "*")
-    response.headers.add("Access-Control-Allow-Methods", "*")
+                #flash("Account created", category="success")
+                #return redirect("/home")
+    
     return response
+    #return render_template("register.html", user = current_user)
+    #don't really need current_user here because we're not showing navbar
 
 @app.route("/logout")
 #can only access logout if logged in
