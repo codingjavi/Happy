@@ -90,6 +90,7 @@ function Register() {
               withCredentials: true
           }
       );
+      console.log("response: "+ response);
       //? : avoiding errors: if response is not null then check data if data is null and so on.
           //if any are null then accessToken = undefined
       const accessToken = response?.data?.accessToken;

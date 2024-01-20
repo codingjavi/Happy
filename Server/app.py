@@ -1,5 +1,5 @@
 from crypt import methods
-from flask import Flask, render_template, url_for, request, flash, session, redirect, jsonify
+from flask import Flask, render_template, url_for, request, flash, session, redirect, jsonify, make_response, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 #user object inherithing from UxerMixin(helps users log in)
 from flask_login import UserMixin
@@ -20,10 +20,18 @@ import io
     #password -> hash password
     #but can't hash password -> password
 
-
+#blueprint = Blueprint('blueprint', __name__)
 app = Flask(__name__)
-cors = CORS(app, resources={r'/api/*': {'origins': 'http://localhost:3000'}})
+#cors = CORS(app, resources={r'/api/*': {'origins': 'http://localhost:3000'}})
+'''
+cors = CORS(app)
 
+cors = CORS(app, resource={
+    r"/*":{
+        "origins":"*"
+    }
+})'''
+app.config['CORS_HEADERS'] = 'Content-Type'
 #storing databse in this folder
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 
@@ -77,7 +85,12 @@ def load_user(id):
     return User.query.get(int(id))
 
 
-
+#@blueprint.after_request 
+def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
+    # Other headers can be added here if needed
+    return response
 
 @app.route("/home", methods = ['GET', 'POST'])
 def home():
@@ -715,7 +728,7 @@ def login():
     return render_template("login.html", user = current_user)
     #dont really need current_user because we aren't using nav bar here
 
-
+'''
 @app.route('/api/data', methods=['OPTIONS'])
 def handle_options_request():
     response = jsonify()
@@ -723,15 +736,45 @@ def handle_options_request():
     response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
     return response
+'''
+
+@app.after_request
+def after_request_func(response):
+
+    origin = request.headers.get('Origin')
+    
+    if request.method == 'OPTIONS':
+        response = make_response()
+        #response.headers.add("Access-Control-Allow-Origin", "*")
+        
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, x-csrf-token')
+        response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+        
+    else:
+        response.headers.add('Access-Control-Allow-Credentials', 'true')
+
+    if origin:
+        #DONT ADD have to SET IT like below
+        #response.headers.add('Access-Control-Allow-Origin', origin)
+        
+        response.headers['Access-Control-Allow-Origin'] = origin
+
+    return response
 
 #creating register page
-@app.route("/api/register", methods = ['GET', 'POST'])
+@app.route("/api/register", methods = ['GET', 'POST', "OPTIONS"])
+@cross_origin()
 def register():
+    
+    
     print("TEST, TEST, TEST")
     data = request.get_json()
-    print(data)
+    #print(data)
     # Process the data as needed
-    return jsonify({'message': 'POST request received successfully'})
+    response =  jsonify({'message': 'POST request received successfully'})
+    #response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
     '''
     if request.method == 'POST':
         #getting the forms
@@ -775,6 +818,12 @@ def register():
                 return redirect("/home")
     return render_template("register.html", user = current_user)'''
     #don't really need current_user here because we're not showing navbar
+def _build_cors_preflight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Headers", "*")
+    response.headers.add("Access-Control-Allow-Methods", "*")
+    return response
 
 @app.route("/logout")
 #can only access logout if logged in
