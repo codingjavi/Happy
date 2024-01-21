@@ -1,18 +1,19 @@
 import React, { useRef, useEffect, useState, useContext } from 'react';
 import AuthContext from '../context/AuthProvider';//authContext not provider like index
 import axios from '../api/axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 //uri for backedn api
-const LOGIN_URL = '/auth';
+const LOGIN_URL = '/login';
 
 function Login() {
 
     //loading in setAuth from AuthProvider
         //to store STORING users authentication status and other info
-    const { setAuth } = useContext(AuthContext);
+    const { auth, setAuth } = useContext(AuthContext);
     const userRef = useRef();
     const errRef = useRef();
+    const navigate = useNavigate();
 
     //make this into an object?
     const [user, setUser] = useState('');
@@ -21,6 +22,7 @@ function Login() {
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
+        console.log(auth)
         //set focus on the first input (input goes to the element in focus)
         //set focus in input: ref= {userRef}
         userRef.current.focus();
@@ -66,7 +68,8 @@ function Login() {
             setAuth({ user, pwd, roles, accessToken});
             setUser('');
             setPwd('');
-            setSuccess(true);
+            console.log(response)
+            navigate('/dashboard');
         } catch (err) {
             if(!err?.response) {
                 setErrMsg('No Server Response')

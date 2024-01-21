@@ -700,32 +700,42 @@ def index():
 def login():
     #getting user input
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+        data = request.get_json()
+        userName = data['user']
+        password = data['pwd']
 
         #getting emails from database by query to see if any match users input
             #if any do match store in user object
-        user = User.query.filter_by(email=email).first() #gets the first email it matches
+        user = User.query.filter_by(email=userName).first() #gets the first email it matches
 
         #if did find user
         if user:
             #hashing both passwords and see if they match
-            if check_password_hash(user.password, password):
-                flash('Logged in succesfully', category = 'success')
+            #built in function
+            #if check_password_hash(user.password, password):
+            if password == user.password:
+                #flash('Logged in succesfully', category = 'success')
                 
                 #logging in user and remembering that the user is logged in until clear website
                 login_user(user, remember = True)
-                #if logged in go to home page(somewhere else)
-                return redirect("/home")
 
+                #REDIRECTING in server
+                #if logged in go to home page(somewhere else)
+                #return redirect("/home")
+                return jsonify({'message': 'LOGGED IN'})
             #if hashed passwords don't match then
             else:
-                flash('Incorrect password', category = 'error')
+                #send 401 error
+                abort(409, description="Incorrect password")
+                #flash('Incorrect password', category = 'error')
         #if there is no email to the one the user inputted then
         else: 
-            flash('Email does not exist', category='error')
+            #maybe 401 error here too
+            #flash('Email does not exist', category='error')
+            abort(409, description="Username does not exist")
 
-    return render_template("login.html", user = current_user)
+    #return render_template("login.html", user = current_user)
+    return jsonify({'message': 'POST request received successfully'})
     #dont really need current_user because we aren't using nav bar here
 
 '''

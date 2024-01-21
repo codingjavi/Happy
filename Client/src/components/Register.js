@@ -1,8 +1,9 @@
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef, useState, useEffect, useContext } from 'react'
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from '../api/axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthProvider';
 //regex: how we're validating user and password
   //[]: start with lower case or upper case a - z
   //2nd []: can be followed by upper or lower a -z and 0-9 or - _
@@ -20,6 +21,8 @@ const REGISTER_URL = '/api/register'; //to make api call to backend
 function Register() {
   const userRef = useRef();
   const errRef = useRef();
+  const navigate = useNavigate();
+  const { auth, setAuth } = useContext(AuthContext);
 
   const [user, setUser] = useState('');
   const [validName, setValidName] = useState(false);
@@ -104,7 +107,9 @@ function Register() {
           //to conditionally render components, manage user sessions, control access to certain routes
       setUser('');
       setPwd('');
-      setSuccess(true);
+      setAuth({ user, pwd, roles, accessToken})
+      //setSuccess(true);
+      navigate('/dashboard');
     } catch (err) {
         if(!err?.response) {
             setErrMsg('No Server Response')

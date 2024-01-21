@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './components/Home'
 import Login from './components/Login';
 import Register from './components/Register';
+import Dashboard from './components/Dashboard';
+
 function App() {
 
   /*
@@ -30,6 +32,7 @@ function App() {
           <Route index element={<Home />} />
           <Route exact path='/login' element={<Login/>}/>
           <Route exact path='/register' element={<Register/>}/>
+          <Route exact path='/dashboard' element={<Dashboard/>}/>
         </Routes>
       </Router>    
     </div>
