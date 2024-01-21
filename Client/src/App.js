@@ -5,6 +5,7 @@ import Home from './components/Home'
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
+import Survey from './components/Survey';
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
           <Route exact path='/login' element={<Login/>}/>
           <Route exact path='/register' element={<Register/>}/>
           <Route exact path='/dashboard' element={<Dashboard/>}/>
+          <Route exact path='/survey' element={<Survey/>} />
         </Routes>
       </Router>    
     </div>
