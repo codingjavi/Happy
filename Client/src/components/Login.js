@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useContext } from 'react';
 import AuthContext from '../context/AuthProvider';//authContext not provider like index
 import axios from '../api/axios';
 import { Link, useNavigate } from 'react-router-dom';
+import '../static/Login.css'
 
 //uri for backedn api
 const LOGIN_URL = '/login';
