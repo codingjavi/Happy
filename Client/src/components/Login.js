@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useContext } from 'react';
 import AuthContext from '../context/AuthProvider';//authContext not provider like index
 import axios from '../api/axios';
 import { Link, useNavigate } from 'react-router-dom';
-import '../static/Login.css'
+import styles from '../static/Login.css';
 
 //uri for backedn api
 const LOGIN_URL = '/login';
@@ -97,7 +97,7 @@ function Login() {
                     <h1>Logged In!</h1>
                 </section>
             ) : (
-        <section>
+        <section className={styles.login}>
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
             <h1>Sign In</h1>
             <form onSubmit={handleSubmit}>
