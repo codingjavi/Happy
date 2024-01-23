@@ -6,6 +6,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import Survey from './components/Survey';
+import Results from './components/Results';
 
 function App() {
 
@@ -35,6 +36,7 @@ function App() {
           <Route exact path='/register' element={<Register/>}/>
           <Route exact path='/dashboard' element={<Dashboard/>}/>
           <Route exact path='/survey' element={<Survey/>} />
+          <Route exact path='/results' element={<Results/>} />
         </Routes>
       </Router>    
     </div>

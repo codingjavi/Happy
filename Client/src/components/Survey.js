@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import Checkbox from './Checkbox';
 import surveyData from '../data/surveyData';
+import { useNavigate } from 'react-router-dom';
+import axios from '../api/axios';
 
 //keep track of the weakneeses counts(heart, lungs , splee, ...)
 //just calculate and give the vitamins and store
@@ -10,6 +12,8 @@ import surveyData from '../data/surveyData';
 //create a vitamin component where we just use the same component for all the vitamins just change the data
 
 function Survey() {
+    const navigate = useNavigate();
+    const EVAL_URL = '/eval';
     //maybe create a context where i can make the setResults function available to certain components
     const [results, setResults] = useState({
         heart : 0,
@@ -38,10 +42,25 @@ function Survey() {
         
     }
 
-    function handleSubmit(event) {
-        //send results to backend to calculate vitamins needed
+    async function handleSubmit(event) {
+        //send results to backend to calculate vitamins needed axios post request
+        
+        //wait for api call to return response then redirect
+        try {
+            const response = await axios.post(EVAL_URL, 
+                JSON.stringify({results}),
+                {
+                    headers: {'Content-Type':'application/json'}
+                }
+            );
+            //what to do with data
+
+        } catch(err) {
+
+        }
 
         //redirect to results page
+        navigate('/results');
         
     }
 

@@ -12,6 +12,7 @@ function Login() {
     //loading in setAuth from AuthProvider
         //to store STORING users authentication status and other info
     const { auth, setAuth } = useContext(AuthContext);
+    //hold reference to DOM element or value. changes to it DONT TRIGGER RE-RENDER and values stay the same if RENDER
     const userRef = useRef();
     const errRef = useRef();
     const navigate = useNavigate();
