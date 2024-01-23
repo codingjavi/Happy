@@ -40,6 +40,8 @@ function Survey() {
 
     function handleSubmit(event) {
         //send results to backend to calculate vitamins needed
+
+        //redirect to results page
         
     }
 
