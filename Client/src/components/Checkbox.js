@@ -3,7 +3,7 @@ import React from 'react'
 function Checkbox(props) {
   return (
     <div>
-        <label htmlFor='box'> Do you get leg pains? </label>
+        <label htmlFor='box'> {props.question} </label>
         <input 
             type='checkbox'
             id='box'
