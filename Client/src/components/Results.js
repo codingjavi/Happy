@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Vitamins() {
+function Results() {
   return (
     <div>
       
@@ -8,4 +8,4 @@ function Vitamins() {
   )
 }
 
-export default Vitamins
+export default Results
