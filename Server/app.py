@@ -2,18 +2,21 @@ from crypt import methods
 from flask import Flask, render_template, url_for, request, flash, session, redirect, jsonify, make_response, Blueprint, abort
 from flask_sqlalchemy import SQLAlchemy
 #user object inherithing from UxerMixin(helps users log in)
-from flask_login import UserMixin
+#from flask_login import UserMixin
 from sqlalchemy import null
 from sqlalchemy.sql import func
 #encrypts passwords 
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, login_required, logout_user, current_user, LoginManager
+#from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_cors import CORS, cross_origin
-
+import jwt
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from functools import wraps
 import urllib.request
 from PIL import Image
 import base64
 import io
+from datetime import datetime, timedelta
 #using current_user object to access all of the info about the currently logged in user
 
 #hashing function is a one way function that does not have an inverse(like math)
@@ -23,6 +26,7 @@ import io
 #blueprint = Blueprint('blueprint', __name__)
 app = Flask(__name__)
 #cors = CORS(app, resources={r'/api/*': {'origins': 'http://localhost:3000'}})
+#CORS(app)
 '''
 cors = CORS(app)
 
@@ -34,7 +38,7 @@ cors = CORS(app, resource={
 app.config['CORS_HEADERS'] = 'Content-Type'
 #storing databse in this folder
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-
+jwt = JWTManager(app)
 db = SQLAlchemy(app)
 
 
@@ -60,7 +64,7 @@ class Note(db.Model):
     #have to give it proper atributes(look at sqlalchemy.com) and foreignKey for one to many relationship
 
 #how we're storing user input into database
-class User(db.Model, UserMixin):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     email = db.Column(db.String(150), unique = True)
     name = db.Column(db.String(150))
@@ -70,6 +74,7 @@ class User(db.Model, UserMixin):
             #like a list
     notes = db.relationship('Note')
 
+'''
 #setting up login manager
 login_manager = LoginManager()
 #Where do we need to go if not logged in(to login page)
@@ -83,7 +88,8 @@ login_manager.init_app(app)
 def load_user(id):
     #looking for primary key
     return User.query.get(int(id))
-
+    #return User(id)
+'''
 
 #@blueprint.after_request 
 def after_request(response):
@@ -91,6 +97,13 @@ def after_request(response):
     header['Access-Control-Allow-Origin'] = '*'
     # Other headers can be added here if needed
     return response
+
+@app.route("/api/dashboard", methods = ['GET'])
+@jwt_required()
+def dashboard():
+    current_user_id = get_jwt_identity()
+    print(current_user_id)
+    return jsonify({'message': 'POST request received successfully'})
 
 @app.route("/home", methods = ['GET', 'POST'])
 def home():
@@ -115,7 +128,8 @@ def home():
         
     return render_template('home.html', user = current_user, checked = checked)
 
-@app.route("/eval", methods = ['POST', 'GET'])
+@app.route("/api/eval", methods = ['POST', 'GET'])
+@jwt_required()
 def eval():
     
 
@@ -129,7 +143,6 @@ def eval():
     #if its the first time running evaluation
     evaluated = True'''
 
-    print("Im here")
     #the different types of vitamins
     heart = 0
     heart_description = "The heart is the hardest working muscle of the body. It continually contracts and relaxes (beating over 100,000 times every day), delivering life-giving blood to every organ, gland, cell, and structure of the body. ReGenerZyme Heart supports and restores the heart as well as other muscles of the body. It is excellent nutrition for athletes and others who want to optimize heart and muscle function."
@@ -149,8 +162,21 @@ def eval():
     thyroid = 0
     thyroid_description = "The thyroid is involved in producing hormones necessary for a stable emotional state, optimal metabolism, and normal body function. ReGenerZyme Thyroid was formulated to support the body with nutrients used to hydrate, balance, and restore the energy of the thyroid so it can function optimally."
 
+    response =  jsonify({'message': 'POST request received successfully'})
+    current_user_id = get_jwt_identity()
     if request.method == 'POST':
+        #print("User id: " + current_user.id + "\n")
 
+        data = request.get_json()
+        print(data)
+        data = data['results']
+        heart = data['heart']
+        immune = data['immune']
+        thyroid = data['thyroid']
+        kalmz = data['kalmz']
+        gastro = data['gastro']
+        
+        '''
         if request.form['submit_button'] == 'checked':
             flash('Evaluation complete!, click results to see results', category='success')
 
@@ -200,7 +226,7 @@ def eval():
 
         if request.form.get('adrenal2'):
             immune += 1
-
+        '''
         
             #vitamin = "heart",
             #the vitamin
@@ -209,19 +235,19 @@ def eval():
         #ITS RUNNING NOW!! no need to do sessions anymore, BUT THE BUTTON DOESN'T WORK!!!
         if heart >= 8:
             
-            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 3 capsules before bed and 3 in the morning", description = heart_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 3 capsules before bed and 3 in the morning", description = heart_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif heart >= 5:
             
-            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 2 capsules before bed and 2 in the morning", description = heart_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 2 capsules before bed and 2 in the morning", description = heart_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif heart >= 3:
             
-            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 1 capsule before bed and 1 in the morning",description = heart_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 1 capsule before bed and 1 in the morning",description = heart_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
@@ -229,53 +255,53 @@ def eval():
 
 
         if immune == 8:
-            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 3 capsule before bed and 3 in the morning",description = immune_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 3 capsule before bed and 3 in the morning",description = immune_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif immune >= 5:
-            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 2 capsule before bed and 2 in the morning",description = immune_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 2 capsule before bed and 2 in the morning",description = immune_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif immune >= 2:
-            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 1 capsule before bed and 1 in the morning",description = immune_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 1 capsule before bed and 1 in the morning",description = immune_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
 
         if gastro == 6:
-            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 3 capsule before bed and 3 in the morning",description = gastro_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 3 capsule before bed and 3 in the morning",description = gastro_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif gastro >=3:
-            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 2 capsule before bed and 2 in the morning",description = gastro_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 2 capsule before bed and 2 in the morning",description = gastro_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif gastro >= 1:
-            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 1 capsule before bed and 1 in the morning",description = gastro_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 1 capsule before bed and 1 in the morning",description = gastro_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
 
         if kalmz == 8:#take more at night
-            new_vitamin = Note(vitamin = "Kalmz", data = "you need 4 capsule before bed",description = kalmz_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "Kalmz", data = "you need 4 capsule before bed",description = kalmz_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif kalmz >=4:
-            new_vitamin = Note(vitamin = "Kalmz", data = "you need 3 capsule before bed",description = kalmz_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "Kalmz", data = "you need 3 capsule before bed",description = kalmz_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif kalmz >= 1:
-            new_vitamin = Note(vitamin = "Kalmz", data = "you need 2 capsule before bed",description = kalmz_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "Kalmz", data = "you need 2 capsule before bed",description = kalmz_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
-
+        '''
         if adrenal == 7:
             new_vitamin = Note(vitamin = "ReGenerZyme Adrenal", data = "you need 1 capsule before bed and 1 in the morning",description = adrenal_description, user_id = current_user.id)
             db.session.add(new_vitamin)
@@ -290,20 +316,20 @@ def eval():
             new_vitamin = Note(vitamin = "ReGenerZyme Adrenal", data = "you need 1 capsule before bed and 1 in the morning",description = adrenal_description, user_id = current_user.id)
             db.session.add(new_vitamin)
             db.session.commit()
-
+        '''
 
         if thyroid >= 8:
-            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 3 capsule before bed",description = thyroid_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 3 capsule before bed",description = thyroid_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif thyroid >=4:
-            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 2 capsule before bed",description = thyroid_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 2 capsule before bed",description = thyroid_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif thyroid >= 1:
-            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 1 capsule before bed",description = thyroid_description, user_id = current_user.id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 1 capsule before bed",description = thyroid_description, user_id = current_user_id)
             db.session.add(new_vitamin)
             db.session.commit()
 
@@ -312,7 +338,8 @@ def eval():
 
     #maybe request.form(button here to take me to /results)
         
-    return render_template("eval.html", user = current_user, heart = heart)
+    #return render_template("eval.html", user = current_user, heart = heart)
+    return response
 
 #to evaluate again HAVE TO DELETE PREVIOUS VITAMINS
 @app.route("/eval_again", methods = ['POST', 'GET'])
@@ -707,22 +734,28 @@ def login():
         #getting emails from database by query to see if any match users input
             #if any do match store in user object
         user = User.query.filter_by(email=userName).first() #gets the first email it matches
-
+        
         #if did find user
         if user:
             #hashing both passwords and see if they match
             #built in function
             #if check_password_hash(user.password, password):
             if password == user.password:
+                #creating JWT token
+                accessToken = create_access_token(identity=user.id, expires_delta=timedelta(hours=1))
+
+
+
+
+
                 #flash('Logged in succesfully', category = 'success')
                 
                 #logging in user and remembering that the user is logged in until clear website
-                login_user(user, remember = True)
-
+                #login_user(user, remember = True)
                 #REDIRECTING in server
                 #if logged in go to home page(somewhere else)
                 #return redirect("/home")
-                return jsonify({'message': 'LOGGED IN'})
+                return jsonify({'accessToken':accessToken})
             #if hashed passwords don't match then
             else:
                 #send 401 error
@@ -758,9 +791,8 @@ def after_request_func(response):
         #response.headers.add("Access-Control-Allow-Origin", "*")
         
         response.headers.add('Access-Control-Allow-Credentials', 'true')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, x-csrf-token')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, x-csrf-token, Authorization, Origin, Accept')
         response.headers.add('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
-        
     else:
         response.headers.add('Access-Control-Allow-Credentials', 'true')
 
@@ -808,7 +840,9 @@ def register():
                 new_user = User(email=userName, name=name, password=password1)
                 db.session.add(new_user)
                 db.session.commit()
-                login_user(new_user, remember=True)
+
+                #sets up user id
+                #login_user(new_user, remember=True)
                 #flash("Account created", category="success")
                 #return redirect("/home")
     
@@ -816,6 +850,7 @@ def register():
     #return render_template("register.html", user = current_user)
     #don't really need current_user here because we're not showing navbar
 
+'''
 @app.route("/logout")
 #can only access logout if logged in
 @login_required
@@ -824,10 +859,11 @@ def logout():
     logout_user()
     #when user logs out redirecting back to sign in page
     return redirect("/login")
-
+'''
 
 if __name__ == '__main__':
-    app.secret_key = 'super secret key'
+    app.secret_key = 'super_secret_key'
+    app.config['SECRET_KEY'] = 'super_secret_key'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SECURITY_PASSWORD_HASH'] = 'bcrypt'  # or another supported method
     app.config['SECURITY_PASSWORD_SALT'] = 'abc'

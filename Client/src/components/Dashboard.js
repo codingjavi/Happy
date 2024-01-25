@@ -3,6 +3,7 @@ import Navbar from './Navbar'
 import AuthContext from '../context/AuthProvider';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import '../static/Dashboard.css' //we do have to import it
+import axios from '../api/axios';
 
 /*
 {first ? (
@@ -21,6 +22,48 @@ function Dashboard() {
     const navigate = useNavigate();
     const { auth } = useContext(AuthContext);
     
+    async function handleSubmit(event) {
+        //send results to backend to calculate vitamins needed axios post request
+        console.log(auth)
+        //wait for api call to return response then redirect
+        try {
+
+            const response = await axios({ 
+                method: 'get', 
+                url: '/api/dashboard', 
+                headers: { 'Authorization': 'Bearer ' + auth.accessToken, 'Content-Type': 'application/json' } })
+            /*
+            const response = await axios.get('/api/dashboard', 
+                JSON.stringify({}),
+                {
+                    headers: {
+                        'Authorization': `Bearer ${auth.accessToken}`,
+                        'Content-Type':'application/json',
+                        
+                    }
+                    
+                }
+            );*/
+            //what to do with data
+            console.log(response);
+
+        } catch(err) {
+            // Handle error
+            if (err.response) {
+                // The request was made and the server responded with a status code
+                console.log(err.response.data);
+                console.log(err.response.status);
+                console.log(err.response.headers);
+            } else if (err.request) {
+                // The request was made but no response was received
+                console.log(err.request);
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                console.error('Error', err.message);
+            }
+        }
+        
+    }
 
     if(!auth.hasOwnProperty('user')){
         return <Navigate replace to="/login" />;
@@ -42,7 +85,7 @@ function Dashboard() {
                     <h2><a href="{{ url_for('results') }}"> Check your vitamins here!</a> </h2>
                     <p>Keep track of you vitamins here</p>
                 </div>
-                
+                <button onClick={handleSubmit}></button>
             </body>
     )
     }

@@ -58,7 +58,11 @@ function Login() {
             );
             //? : avoiding errors: if response is not null then check data if data is null and so on.
                 //if any are null then accessToken = undefined
+
+            //USER TOKEN: keep it at cookie or local storage
+                //When your app would like to retrieve data from API, append the token to request header every time. You can decrypt the token from backend middleware as logged in user or not.
             const accessToken = response?.data?.accessToken;
+            console.log(accessToken);
 
             //roles(made up) for the node.js backend (might not for us)
             const roles = response?.data?.roles;
