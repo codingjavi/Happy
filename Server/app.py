@@ -582,10 +582,16 @@ def eval_again():
         
     return render_template("eval.html", user = current_user, heart = heart)
 
-@app.route("/results")
+@app.route("/api/results")
+@jwt_required()
 def results():
-
+    current_user_id = get_jwt_identity()
     #MAYBE PUT ALL OF IMAGES IN LIST AND RUN FOR LOOP IN HTML SO IMAGES COULD GO TO THE VERY TOP
+    new_vitamin = Note.query.filter_by(user_id = current_user_id).all()
+    serialized_data = [{'id': note.id, 'vitamin': note.vitamin, 'data':note.data, 'description':note.description} for note in new_vitamin]
+    print(serialized_data)
+    return jsonify({'vitamins': serialized_data})
+    '''
     images = []
 
     #displaying pictures
@@ -598,7 +604,7 @@ def results():
     #maybe have to query from database
     #vitamin = Note.query.get_or_404(id)
     #vitamin_list = Note.query.all()
-    new_vitamin = Note.query.filter_by(user_id = current_user.id).all()
+    
 
     heart_image = null
     immune_image = null
@@ -711,10 +717,10 @@ def results():
             thyroid_image = encoded_img_data_thyroid.decode('utf-8')
 
             images.append(thyroid_image)
-        
+        '''
     
 #heart_image = heart_image, immune_image = immune_image, gastro_image = gastro_image, kalmz_image = kalmz_image
-    return render_template("results.html", user = current_user, images = images)
+    #return render_template("results.html", user = current_user, images = images)
 
 
 #home page

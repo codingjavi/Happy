@@ -85,7 +85,7 @@ function Survey() {
                 console.error('Error', err.message);
             }
         }
-
+        //when we redirect it also has to make an api to make sure USER IS AUTHORIZED
         //redirect to results page
         navigate('/results');
         
