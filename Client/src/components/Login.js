@@ -72,9 +72,10 @@ function Login() {
             //STORING ALL OF USERS INFO
                 //to conditionally render components, manage user sessions, control access to certain routes
             setAuth({ user, pwd, roles, accessToken});
+            localStorage.setItem("accessToken", accessToken)
             setUser('');
             setPwd('');
-            console.log(response)
+            console.log(auth)
             navigate('/dashboard');
         } catch (err) {
             if(!err?.response) {

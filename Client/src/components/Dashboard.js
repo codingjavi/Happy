@@ -82,7 +82,7 @@ function Dashboard() {
                 
                 <div class = "check">
                     <img class = "check_pic" src="assets/images/vitamins.jpg" alt="none" />
-                    <h2><a href="{{ url_for('results') }}"> Check your vitamins here!</a> </h2>
+                    <h2> <Link to="/results"> Check your vitamins here! </Link></h2>
                     <p>Keep track of you vitamins here</p>
                 </div>
                 <button onClick={handleSubmit}></button>
