@@ -1,25 +1,25 @@
 import React from 'react';
-import '../static/Home.css'
+import styles from '../static/Home.module.css'
 import { Link } from 'react-router-dom';
 
 function Home() {
 
     return (
         <body>
-            <header className="header">
+            <header className={styles.header}>
                 <h1>Welcome to Happy Health</h1>
             </header>
             <main>
-                <div className="box1">
+                <div className={styles.box1}>
                     <p>We aim to cure people naturally by using vitamins instead of prescribed medications.</p>
                     <Link to ="/login"> Click here to get started </Link>
                     <br />
                     <br />
                 </div>
 
-                <div className="happy">
-                    <img src='/assets/images/happy.jpg' />
-                    <div className="text"> When doctors fail and you feel like you have no one to go to.</div>
+                <div className={styles.happy}>
+                    <img className={styles.img} src='/assets/images/happy.jpg' />
+                    <div className={styles.text}> When doctors fail and you feel like you have no one to go to.</div>
                 </div>
 
                 <h2>My story</h2>

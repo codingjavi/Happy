@@ -1,5 +1,6 @@
-import React from 'react'
-
+import React from 'react';
+import styles from '../static/Vitamins.module.css';
+//import '../styles/tailwind.css';
 function Vitamins(props) {
     //load picture
     //maybe use section insetad of div
@@ -7,7 +8,7 @@ function Vitamins(props) {
     //const imagePath = "/assets/images/ReGenerZyme%20Heart.jpg"
     return (
         <div>
-            <img src={imagePath} />
+            <img className={styles.img}src={imagePath} />
             <section>
                 {props.vitamin}
                 {props.data}
