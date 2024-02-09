@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 #from flask_login import login_user, login_required, logout_user, current_user, LoginManager
 from flask_cors import CORS, cross_origin
 import jwt
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity, unset_jwt_cookies
 from functools import wraps
 import urllib.request
 from PIL import Image
@@ -589,7 +589,7 @@ def results():
     #MAYBE PUT ALL OF IMAGES IN LIST AND RUN FOR LOOP IN HTML SO IMAGES COULD GO TO THE VERY TOP
     new_vitamin = Note.query.filter_by(user_id = current_user_id).all()
     serialized_data = [{'id': note.id, 'vitamin': note.vitamin, 'data':note.data, 'description':note.description} for note in new_vitamin]
-    print(serialized_data)
+    
     return jsonify({'vitamins': serialized_data})
     '''
     images = []
@@ -856,16 +856,16 @@ def register():
     #return render_template("register.html", user = current_user)
     #don't really need current_user here because we're not showing navbar
 
-'''
-@app.route("/logout")
+
+@app.route("/logout", methods=["POST"])
 #can only access logout if logged in
-@login_required
+@jwt_required()
 def logout():
+    response = jsonify({"msg": "logout successful"})
     #function automatically logs out current user
-    logout_user()
-    #when user logs out redirecting back to sign in page
-    return redirect("/login")
-'''
+    unset_jwt_cookies(response)
+    return response
+
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
