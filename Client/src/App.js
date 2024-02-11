@@ -7,6 +7,7 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import Survey from './components/Survey';
 import Results from './components/Results';
+import Navbar from './components/Navbar';
 
 function App() {
 
@@ -29,11 +30,15 @@ function App() {
     <div>
       
       <Router>
+
+
+
         <Routes>
       
           <Route index element={<Home />} />
           <Route exact path='/login' element={<Login/>}/>
           <Route exact path='/register' element={<Register/>}/>
+          
           <Route exact path='/dashboard' element={<Dashboard/>}/>
           <Route exact path='/survey' element={<Survey/>} />
           <Route exact path='/results' element={<Results/>} />
@@ -42,5 +47,7 @@ function App() {
     </div>
   )
 }
+
+
 
 export default App
