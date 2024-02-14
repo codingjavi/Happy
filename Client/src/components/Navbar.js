@@ -1,7 +1,7 @@
 import React, {useContext} from 'react'
 import axios from '../api/axios';
 import AuthContext from '../context/AuthProvider';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 const LOGOUT_URL = '/logout';
 
 function Navbar() {
@@ -39,7 +39,13 @@ function Navbar() {
   }
 return (
   <nav className='navbar'>
-    <h1>Happy Health</h1>
+
+
+    <h1>
+      <Link to="/dashboard" style={{ textDecoration: 'none', color: 'white' }}>
+        Happy Health
+      </Link>
+    </h1>
     <h2>
       <span style={{ cursor: 'pointer' }} onClick={handleSignOut}>
         Sign out

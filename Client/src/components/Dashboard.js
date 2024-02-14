@@ -69,7 +69,9 @@ function Dashboard() {
         return <Navigate replace to="/login" />;
     } else {
         return (
+            
             <body>
+                <Navbar />
                 <h1>Welcome to Happy Health {auth.user}</h1>
 
                 <div class = "eval">     

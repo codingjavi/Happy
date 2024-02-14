@@ -37,6 +37,7 @@ function Results() {
 
     return (
         <div>
+            <Navbar />
             {vitaminElements || "Take our Survey!"}
         </div>
     )

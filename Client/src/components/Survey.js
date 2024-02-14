@@ -4,6 +4,7 @@ import surveyData from '../data/surveyData';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import AuthContext from '../context/AuthProvider';
+import Navbar from './Navbar';
 
 //keep track of the weakneeses counts(heart, lungs , splee, ...)
 //just calculate and give the vitamins and store
@@ -93,6 +94,7 @@ function Survey() {
 
     return (
         <form onSubmit={handleSubmit}>
+            <Navbar />
             {surveyElements}
 
             <button>Submit</button>
