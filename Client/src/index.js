@@ -19,8 +19,8 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 /* 
-trying to make the sign out button work
-trying to make refresh token functianlity to work
+make sure that users can only see if they have JWT
+trying to make refresh token functianlity to work (maybe isAuth)
 
 
 */
