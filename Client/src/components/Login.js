@@ -1,17 +1,19 @@
-import React, { useRef, useEffect, useState, useContext } from 'react';
-import AuthContext from '../context/AuthProvider';//authContext not provider like index
+import React, { useRef, useEffect, useState } from 'react';
+//import AuthContext from '../context/AuthProvider';//authContext not provider like index
 import axios from '../api/axios';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from '../static/Login.module.css';
+import useAuth from '../hooks/useAuth';
 
 //uri for backedn api
 const LOGIN_URL = '/login';
 
-function Login() {
+function Login(props) {
 
     //loading in setAuth from AuthProvider
         //to store STORING users authentication status and other info
-    const { auth, setAuth } = useContext(AuthContext);
+    //const { auth, setAuth } = useContext(AuthContext);
+    const { setAuth } = useAuth();
     //hold reference to DOM element or value. changes to it DONT TRIGGER RE-RENDER and values stay the same if RENDER
     const userRef = useRef();
     const errRef = useRef();
@@ -24,7 +26,7 @@ function Login() {
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
-        console.log(auth)
+        //console.log(auth)
         //set focus on the first input (input goes to the element in focus)
         //set focus in input: ref= {userRef}
         userRef.current.focus();
@@ -73,9 +75,10 @@ function Login() {
                 //to conditionally render components, manage user sessions, control access to certain routes
             setAuth({ user, pwd, roles, accessToken});
             localStorage.setItem("accessToken", accessToken)
+            
             setUser('');
             setPwd('');
-            console.log(auth)
+            //console.log(auth)
             navigate('/dashboard');
         } catch (err) {
             if(!err?.response) {

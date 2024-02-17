@@ -8,8 +8,11 @@ import Dashboard from './components/Dashboard';
 import Survey from './components/Survey';
 import Results from './components/Results';
 import Navbar from './components/Navbar';
+import RequiredAuth from './components/RequireAuth';
+import useToken from './components/useToken';
 
 function App() {
+  const { token, setToken } = useToken();
 
   /*
   const [data, setData] = useState([{}])
@@ -36,12 +39,15 @@ function App() {
         <Routes>
       
           <Route index element={<Home />} />
-          <Route exact path='/login' element={<Login/>}/>
+          <Route exact path='/login' element={<Login setToken={setToken}/>}/>
           <Route exact path='/register' element={<Register/>}/>
           
-          <Route exact path='/dashboard' element={<Dashboard/>}/>
-          <Route exact path='/survey' element={<Survey/>} />
-          <Route exact path='/results' element={<Results/>} />
+          {/* protect routes */}
+          <Route element={<RequiredAuth />}>
+            <Route exact path='/dashboard' element={<Dashboard/>}/>
+            <Route exact path='/survey' element={<Survey/>} />
+            <Route exact path='/results' element={<Results/>} />
+          </Route>
         </Routes>
       </Router>    
     </div>

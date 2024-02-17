@@ -19,8 +19,8 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 /* 
-make sure that users can only see if they have JWT
 trying to make refresh token functianlity to work (maybe isAuth)
+making sure refresh doesn't reset our tokens and take us out to login page
 
 
 */
