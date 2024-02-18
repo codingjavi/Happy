@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useContext } from 'react'
 import Navbar from './Navbar'
 import AuthContext from '../context/AuthProvider';
-import { Link, useNavigate, Navigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import '../static/Dashboard.css' //we do have to import it
 import axios from '../api/axios';
 
@@ -20,6 +20,7 @@ import axios from '../api/axios';
 
 function Dashboard() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { auth } = useContext(AuthContext);
     
     async function handleSubmit(event) {
@@ -48,6 +49,15 @@ function Dashboard() {
             console.log(response);
 
         } catch(err) {
+
+            //if error then sends user back to login (to reauthenticate)
+                //once log back it then it sends them back to where they were
+            console.log(err);
+            navigate('/login', { state: { from: location },
+            replace:true
+        });
+
+            /*
             // Handle error
             if (err.response) {
                 // The request was made and the server responded with a status code
@@ -60,7 +70,7 @@ function Dashboard() {
             } else {
                 // Something happened in setting up the request that triggered an Error
                 console.error('Error', err.message);
-            }
+            }*/
         }
         
     }

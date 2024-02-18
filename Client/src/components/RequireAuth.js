@@ -5,7 +5,7 @@ const RequiredAuth = () => {
     const { auth } = useAuth();
     const location = useLocation();
     //Outlet: child components protected by this require Auth
-    //from and replace: keeps track of where we were before incase we want to go back
+    //from and replace: keeps track of where we were before incase we want to go back and where we want to go after login
     return (
         auth?.user
             ? <Outlet />

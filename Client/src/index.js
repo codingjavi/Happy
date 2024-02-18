@@ -19,7 +19,11 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 /* 
-trying to make refresh token functianlity to work (maybe isAuth)
+USE useAxiosPrivate wherever you need to make an API CALL with JWT (does refresh token)
+  if users cookie expires then it redirects them back to login to re authenticate (usually a day long)
+
+trying to make refresh token functianlity to work (maybe isAuth) - 
+  MAKE REFRESH TOKEN API CALL 
 making sure refresh doesn't reset our tokens and take us out to login page
 
 

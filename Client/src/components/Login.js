@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 //import AuthContext from '../context/AuthProvider';//authContext not provider like index
 import axios from '../api/axios';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from '../static/Login.module.css';
 import useAuth from '../hooks/useAuth';
 
@@ -17,7 +17,11 @@ function Login(props) {
     //hold reference to DOM element or value. changes to it DONT TRIGGER RE-RENDER and values stay the same if RENDER
     const userRef = useRef();
     const errRef = useRef();
+
+    //taking the user to where they wanted to go
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "dashboard";
 
     //make this into an object?
     const [user, setUser] = useState('');
@@ -79,7 +83,7 @@ function Login(props) {
             setUser('');
             setPwd('');
             //console.log(auth)
-            navigate('/dashboard');
+            navigate(from, {replace: true});
         } catch (err) {
             if(!err?.response) {
                 setErrMsg('No Server Response')
