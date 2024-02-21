@@ -83,6 +83,8 @@ function Login(props) {
             setUser('');
             setPwd('');
             //console.log(auth)
+            console.log(from);
+            //maybe change this
             navigate(from, {replace: true});
         } catch (err) {
             if(!err?.response) {

@@ -10,6 +10,7 @@ import Results from './components/Results';
 import Navbar from './components/Navbar';
 import RequiredAuth from './components/RequireAuth';
 import useToken from './components/useToken';
+import PersistLogin from './components/PersistLogin';
 
 function App() {
   const { token, setToken } = useToken();
@@ -43,10 +44,12 @@ function App() {
           <Route exact path='/register' element={<Register/>}/>
           
           {/* protect routes */}
-          <Route element={<RequiredAuth />}>
-            <Route exact path='/dashboard' element={<Dashboard/>}/>
-            <Route exact path='/survey' element={<Survey/>} />
-            <Route exact path='/results' element={<Results/>} />
+          <Route element={<PersistLogin />}>
+            <Route element={<RequiredAuth />}>
+              <Route exact path='/dashboard' element={<Dashboard />}/>
+              <Route exact path='/survey' element={<Survey />} />
+              <Route exact path='/results' element={<Results />} />
+            </Route>
           </Route>
         </Routes>
       </Router>    

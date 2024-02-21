@@ -19,6 +19,7 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 /* 
+CRAETE REFRESH API
 USE useAxiosPrivate wherever you need to make an API CALL with JWT (does refresh token)
   if users cookie expires then it redirects them back to login to re authenticate (usually a day long)
 
