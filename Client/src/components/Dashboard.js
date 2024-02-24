@@ -4,6 +4,7 @@ import AuthContext from '../context/AuthProvider';
 import { Link, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import '../static/Dashboard.css' //we do have to import it
 import axios from '../api/axios';
+import useRefreshToken from '../hooks/useRefreshToken';
 
 /*
 {first ? (
@@ -22,6 +23,7 @@ function Dashboard() {
     const navigate = useNavigate();
     const location = useLocation();
     const { auth } = useContext(AuthContext);
+    const refresh = useRefreshToken();
     
     async function handleSubmit(event) {
         //send results to backend to calculate vitamins needed axios post request
@@ -96,7 +98,7 @@ function Dashboard() {
                     <h2> <Link to="/results"> Check your vitamins here! </Link></h2>
                     <p>Keep track of you vitamins here</p>
                 </div>
-                <button onClick={handleSubmit}></button>
+                <button onClick={() => refresh()}></button>
             </body>
     )
     }

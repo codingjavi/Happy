@@ -11,6 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_cors import CORS, cross_origin
 import jwt
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity, unset_jwt_cookies, get_jwt,get_jwt_identity
+#from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity, unset_jwt_cookies, get_jwt, jwt_refresh_token_required
 from functools import wraps
 import urllib.request
 from PIL import Image
@@ -71,6 +72,7 @@ class User(db.Model):
     email = db.Column(db.String(150), unique = True)
     name = db.Column(db.String(150))
     password = db.Column(db.String(150))
+    refreshToken = db.Column(db.String(150))
     #tell every time we create vitamin add in that vitamin id into notes(storing all of users vitamins here)
         #using relationship to referance name of class
             #like a list
@@ -750,11 +752,11 @@ def login():
             #if check_password_hash(user.password, password):
             if password == user.password:
                 #creating JWT token
-                accessToken = create_access_token(identity=user.id, expires_delta=timedelta(hours=1))
+                accessToken = create_access_token(identity=user.id, expires_delta=timedelta(seconds=10))
 
-
-
-
+                newRefreshToken = create_refresh_token(identity=user.id, expires_delta=timedelta(hours=24))
+                user.refreshToken = newRefreshToken
+                db.session.commit()
 
                 #flash('Logged in succesfully', category = 'success')
                 
@@ -763,7 +765,11 @@ def login():
                 #REDIRECTING in server
                 #if logged in go to home page(somewhere else)
                 #return redirect("/home")
-                return jsonify({'accessToken':accessToken})
+                response = make_response(jsonify({'accessToken':accessToken}))
+
+                    # Setting a cookie
+                response.set_cookie('jwt', newRefreshToken, httponly=True, secure=True, samesite='None', max_age=24 * 60 * 60)
+                return response
             #if hashed passwords don't match then
             else:
                 #send 401 error
@@ -845,6 +851,7 @@ def register():
             #if user definately not exist then put them in database
                 #if an account email doesn't have the same email then make database
             if db.session.query(User).filter_by(email=userName).count() < 1:
+                
                 new_user = User(email=userName, name=name, password=password1)
                 db.session.add(new_user)
                 db.session.commit()
@@ -859,6 +866,25 @@ def register():
     #don't really need current_user here because we're not showing navbar
 
 #refreshing tokens
+
+@app.route('/refresh', methods=['GET'])
+def refresh():
+    #print(request.cookies)
+    refreshToken = request.cookies['jwt']
+    user = User.query.filter_by(refreshToken=refreshToken).first()
+
+    accessToken = create_access_token(identity=user.id, expires_delta=timedelta(seconds=10))
+
+    newRefreshToken = create_refresh_token(identity=user.id, expires_delta=timedelta(hours=24))
+    user.refreshToken = newRefreshToken
+    db.session.commit()
+    response = make_response(jsonify({'accessToken':accessToken}))
+
+        # Setting a cookie
+    response.set_cookie('jwt', newRefreshToken, httponly=True, secure=True, samesite='None', max_age=24 * 60 * 60)
+    return response
+    
+'''
 @app.after_request
 def refresh_expiring_jwts(response):
     try:
@@ -875,7 +901,7 @@ def refresh_expiring_jwts(response):
     except (RuntimeError, KeyError):
         # Case where there is not a valid JWT. Just return the original respone
         return response
-
+'''
 @app.route("/logout", methods=["POST"])
 #can only access logout if logged in
 @jwt_required()
@@ -885,6 +911,18 @@ def logout():
     unset_jwt_cookies(response)
     return response
 
+'''
+@app.route('/refresh', methods=['GET'])
+@jwt_required(refresh=True)
+def handle_refresh_token():
+    
+    print("TESTSTTTTTT")
+    
+    accessToken = create_access_token(identity=get_jwt_identity())
+    print(accessToken)
+    return jsonify({'accessToken':accessToken})
+    '''
+        
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

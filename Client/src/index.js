@@ -19,7 +19,9 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 /* 
-CRAETE REFRESH API
+STORING REFRESHTOKEN IN COOKIE AND USING THAT TO GET REFRESHTOKEN
+DEBUG REFRESH TOKEN THING - (just want one refresh token)
+CRAETE REFRESH API(), fix the navigate(from) thing in login
 USE useAxiosPrivate wherever you need to make an API CALL with JWT (does refresh token)
   if users cookie expires then it redirects them back to login to re authenticate (usually a day long)
 

@@ -109,7 +109,8 @@ function Register() {
       setPwd('');
       setAuth({ user, pwd, roles, accessToken})
       //setSuccess(true);
-      navigate('/dashboard');
+      //to authenticate
+      navigate('/login');
     } catch (err) {
         if(!err?.response) {
             setErrMsg('No Server Response')

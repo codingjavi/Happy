@@ -14,7 +14,7 @@ function Navbar() {
       const response = await axios({ 
           method: 'post', 
           url: LOGOUT_URL, 
-          headers: { 'Authorization': 'Bearer ' + localStorage.getItem('accessToken'), 'Content-Type': 'application/json' },
+          headers: { 'Authorization': 'Bearer ' + auth.accessToken, 'Content-Type': 'application/json' },
               
       })
       localStorage.removeItem('token'); // Remove JWT from local storage

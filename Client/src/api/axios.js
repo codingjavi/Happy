@@ -8,6 +8,7 @@ export default axios.create({
 
 //runs in BACKGROUND
 //for interceptors that allow us to work w JWT and re try api calls if token expired
+
 export const axiosPrivate = axios.create({
     baseURL: BASE_URL,
     headers: { 'Content-Type' : 'application/json' },

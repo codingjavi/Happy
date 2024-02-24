@@ -21,13 +21,13 @@ function Login(props) {
     //taking the user to where they wanted to go
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || "dashboard";
+    const from = location.state?.from?.pathname || "/dashboard";
 
     //make this into an object?
     const [user, setUser] = useState('');
     const [pwd, setPwd] = useState('')
     const [errMsg, setErrMsg] = useState('');
-    const [success, setSuccess] = useState(false);
+    //const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         //console.log(auth)
@@ -85,7 +85,7 @@ function Login(props) {
             //console.log(auth)
             console.log(from);
             //maybe change this
-            navigate(from, {replace: true});
+            navigate(from);
         } catch (err) {
             if(!err?.response) {
                 setErrMsg('No Server Response')
@@ -107,11 +107,7 @@ function Login(props) {
 
     return (
         <>
-            {success ? (
-                <section>
-                    <h1>Logged In!</h1>
-                </section>
-            ) : (
+            
         <section className={styles.login}>
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
             <h1>Sign In</h1>
@@ -144,7 +140,7 @@ function Login(props) {
                 </span>
             </p>
         </section>
-            )}
+            
         </>
     );
 }
