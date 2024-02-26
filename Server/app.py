@@ -870,19 +870,26 @@ def register():
 @app.route('/refresh', methods=['GET'])
 def refresh():
     #print(request.cookies)
-    refreshToken = request.cookies['jwt']
+    refreshToken = request.cookies.get('jwt').strip() if 'jwt' in request.cookies else None
+    print("\n\n" + refreshToken + "\n\n")
     user = User.query.filter_by(refreshToken=refreshToken).first()
+    if user:
 
-    accessToken = create_access_token(identity=user.id, expires_delta=timedelta(seconds=10))
+        print(user)
+        print(user.id)
+        accessToken = create_access_token(identity=user.id, expires_delta=timedelta(seconds=10))
 
-    newRefreshToken = create_refresh_token(identity=user.id, expires_delta=timedelta(hours=24))
-    user.refreshToken = newRefreshToken
-    db.session.commit()
-    response = make_response(jsonify({'accessToken':accessToken}))
+        newRefreshToken = create_refresh_token(identity=user.id, expires_delta=timedelta(hours=24))
+        user.refreshToken = newRefreshToken
+        db.session.commit()
+        response = make_response(jsonify({'accessToken':accessToken}))
 
-        # Setting a cookie
-    response.set_cookie('jwt', newRefreshToken, httponly=True, secure=True, samesite='None', max_age=24 * 60 * 60)
-    return response
+            # Setting a cookie
+        response.set_cookie('jwt', newRefreshToken, httponly=True, secure=True, samesite='None', max_age=24 * 60 * 60)
+        return response
+    else:
+        print(user)
+        return jsonify({'error': 'error'})
     
 '''
 @app.after_request

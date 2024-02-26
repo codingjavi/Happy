@@ -6,12 +6,15 @@ import useAuth from '../hooks/useAuth';
 const PersistLogin = () => {
     const [isLoading, setIsLoading] = useState(true);
     const refresh = useRefreshToken();
-    const { auth } = useAuth();
+    const { auth, persist } = useAuth();
 
     useEffect(() => {
+        let isMounted = true;
+
         const verifyRefreshToken = async () => {
             try {
                 //get new access token
+                console.log("PERSISTING")
                 await refresh();
             }
             catch (err) {
@@ -19,12 +22,14 @@ const PersistLogin = () => {
             }
             //always runs finally (prevents ENDLESS ERROR LOOP)
             finally {
-                setIsLoading(false);
+                isMounted && setIsLoading(false);
             }
         }
 
         //only run if user doesnt have access token
         !auth?.accessToken ? verifyRefreshToken() : setIsLoading(false);
+    
+        return () => isMounted = false;
     }, [])
 
     useEffect(() => {
@@ -34,7 +39,12 @@ const PersistLogin = () => {
 
     return (
         <>  {/* loading or show child components */}
-            {isLoading ? <p>Loading...</p> : <Outlet />}
+            {!persist
+                ? <Outlet />
+                : isLoading
+                    ? <p>Loading...</p>
+                    : <Outlet />
+            }
         </>
     )
 }

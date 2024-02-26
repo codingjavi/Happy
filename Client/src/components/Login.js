@@ -13,7 +13,7 @@ function Login(props) {
     //loading in setAuth from AuthProvider
         //to store STORING users authentication status and other info
     //const { auth, setAuth } = useContext(AuthContext);
-    const { setAuth } = useAuth();
+    const { setAuth, persist, setPersist } = useAuth();
     //hold reference to DOM element or value. changes to it DONT TRIGGER RE-RENDER and values stay the same if RENDER
     const userRef = useRef();
     const errRef = useRef();
@@ -78,14 +78,14 @@ function Login(props) {
             //STORING ALL OF USERS INFO
                 //to conditionally render components, manage user sessions, control access to certain routes
             setAuth({ user, pwd, roles, accessToken});
-            localStorage.setItem("accessToken", accessToken)
+            //localStorage.setItem("accessToken", accessToken)
             
             setUser('');
             setPwd('');
             //console.log(auth)
             console.log(from);
             //maybe change this
-            navigate(from);
+            navigate(from, { replace: true });
         } catch (err) {
             if(!err?.response) {
                 setErrMsg('No Server Response')
@@ -104,6 +104,14 @@ function Login(props) {
             //also dont have to convert the response to JSON (axios does that)
         
     }
+
+    const togglePersist = () => {
+        setPersist(prev => !prev);
+    }
+
+    useEffect(() => {
+        localStorage.setItem("persist", persist);
+    }, [persist])
 
     return (
         <>
@@ -132,6 +140,15 @@ function Login(props) {
                     required
                 />
                 <button>Sign In</button>
+                <div className="persistCheck">
+                    <input
+                        type="checkbox"
+                        id="persist"
+                        onChange={togglePersist}
+                        checked={persist}
+                    />
+                    <label htmlFor="persist">Trust This Device</label>
+                </div>
             </form>
             <p>
                 Need an Account? <br />
