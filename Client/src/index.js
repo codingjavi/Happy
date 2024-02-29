@@ -19,6 +19,8 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 /* 
+trying to fix postgres models errors
+create the postgresql url to connect
 STORING REFRESHTOKEN IN COOKIE AND USING THAT TO GET REFRESHTOKEN
 DEBUG REFRESH TOKEN THING - (just want one refresh token)
 CRAETE REFRESH API(), fix the navigate(from) thing in login

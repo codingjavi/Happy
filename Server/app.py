@@ -3,7 +3,7 @@ from flask import Flask, render_template, url_for, request, flash, session, redi
 from flask_sqlalchemy import SQLAlchemy
 #user object inherithing from UxerMixin(helps users log in)
 #from flask_login import UserMixin
-from sqlalchemy import null
+from sqlalchemy import null, ForeignKey
 from sqlalchemy.sql import func
 #encrypts passwords 
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -40,7 +40,7 @@ cors = CORS(app, resource={
 })'''
 app.config['CORS_HEADERS'] = 'Content-Type'
 #storing databse in this folder
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:ToProGamer@localhost:5432/master'
 jwt = JWTManager(app)
 db = SQLAlchemy(app)
 
@@ -48,6 +48,8 @@ db = SQLAlchemy(app)
 #
 #db.Model is blueprint for an object thats going to stored in database(all notes need to look like this)
 class Note(db.Model):
+    __tablename__ = 'notes'
+
     #all users vitamins have unique ids
         #autimatically sets id
     id = db.Column(db.Integer, primary_key = True)
@@ -55,7 +57,7 @@ class Note(db.Model):
     data = db.Column(db.String(1000))
     description = db.Column(db.String(10000))
     #using func to set time of added vitamin
-    date = db.Column(db.DateTime(timezone = True), default=func.now())
+    date = db.Column(db.DateTime(timezone = True), server_default=func.now())
     #associating vitamins with user with foreign key(references a column of another database)
         #by storing id of user into this note
             #always references the user
@@ -68,15 +70,17 @@ class Note(db.Model):
 
 #how we're storing user input into database
 class User(db.Model):
+    __tablename__ = 'user'
+
     id = db.Column(db.Integer, primary_key = True)
     email = db.Column(db.String(150), unique = True)
     name = db.Column(db.String(150))
     password = db.Column(db.String(150))
-    refreshToken = db.Column(db.String(150))
+    refreshToken = db.Column(db.ARRAY(db.String), nullable=True)
     #tell every time we create vitamin add in that vitamin id into notes(storing all of users vitamins here)
         #using relationship to referance name of class
             #like a list
-    notes = db.relationship('Note')
+    notes = db.relationship('Note', backref='user', cascade='all, delete-orphan', lazy='dynamic')
 
 '''
 #setting up login manager
@@ -755,7 +759,9 @@ def login():
                 accessToken = create_access_token(identity=user.id, expires_delta=timedelta(seconds=10))
 
                 newRefreshToken = create_refresh_token(identity=user.id, expires_delta=timedelta(hours=24))
-                user.refreshToken = newRefreshToken
+                if user.refreshToken is None:
+                    user.refreshToken = []
+                user.refreshToken.extend(newRefreshToken)
                 db.session.commit()
 
                 #flash('Logged in succesfully', category = 'success')
@@ -872,7 +878,8 @@ def refresh():
     #print(request.cookies)
     refreshToken = request.cookies.get('jwt').strip() if 'jwt' in request.cookies else None
     print("\n\n" + refreshToken + "\n\n")
-    user = User.query.filter_by(refreshToken=refreshToken).first()
+    #user = User.query.filter_by(refreshToken=refreshToken).first()
+    user = User.query.filter(func.array_contains(User.refreshToken, refreshToken)).first()
     if user:
 
         print(user)
