@@ -3,8 +3,8 @@ from flask import Flask, render_template, url_for, request, flash, session, redi
 from flask_sqlalchemy import SQLAlchemy
 #user object inherithing from UxerMixin(helps users log in)
 #from flask_login import UserMixin
-from sqlalchemy import null, ForeignKey
-from sqlalchemy.sql import func
+from sqlalchemy import null, ForeignKey, func, text, column
+#from sqlalchemy.sql import func
 #encrypts passwords 
 from werkzeug.security import generate_password_hash, check_password_hash
 #from flask_login import login_user, login_required, logout_user, current_user, LoginManager
@@ -761,7 +761,16 @@ def login():
                 newRefreshToken = create_refresh_token(identity=user.id, expires_delta=timedelta(hours=24))
                 if user.refreshToken is None:
                     user.refreshToken = []
-                user.refreshToken.extend(newRefreshToken)
+                #HOW TO APPEND TO ARRRAY
+                sql_query = text(
+                    """
+                    UPDATE "user"
+                    SET "refreshToken" = array_append("refreshToken", :token)
+                    WHERE id = :user_id
+                    """
+                )
+
+                db.session.execute(sql_query, {"token": newRefreshToken, "user_id": user.id})
                 db.session.commit()
 
                 #flash('Logged in succesfully', category = 'success')
@@ -875,19 +884,38 @@ def register():
 
 @app.route('/refresh', methods=['GET'])
 def refresh():
-    #print(request.cookies)
+    #getting the newRefreshToken
     refreshToken = request.cookies.get('jwt').strip() if 'jwt' in request.cookies else None
     print("\n\n" + refreshToken + "\n\n")
     #user = User.query.filter_by(refreshToken=refreshToken).first()
-    user = User.query.filter(func.array_contains(User.refreshToken, refreshToken)).first()
+    user = User.query.filter(User.refreshToken.any(refreshToken)).first()
+    '''
+    query = text("SELECT * FROM user WHERE :token = ANY (refreshToken)")
+    query = query.columns(column('refreshToken'))
+    user = db.session.execute(query, {'token': refreshToken}).fetchone()
+    '''
+    print("\n\ntestttttt\n\n")
     if user:
 
         print(user)
         print(user.id)
+
         accessToken = create_access_token(identity=user.id, expires_delta=timedelta(seconds=10))
 
         newRefreshToken = create_refresh_token(identity=user.id, expires_delta=timedelta(hours=24))
-        user.refreshToken = newRefreshToken
+        if user.refreshToken is None:
+            user.refreshToken = []
+
+        sql_query = text(
+            """
+            UPDATE "user"
+            SET "refreshToken" = array_append("refreshToken", :token)
+            WHERE id = :user_id
+            """
+        )
+
+        db.session.execute(sql_query, {"token": newRefreshToken, "user_id": user.id})
+        
         db.session.commit()
         response = make_response(jsonify({'accessToken':accessToken}))
 

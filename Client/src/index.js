@@ -19,6 +19,13 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 /* 
+REFRESH TOKEN FUNC WORKS
+  NOW TRY TO FILTER ARRAY TO ONLY KEEP ONES THAT IT NEEDS LIKE IN GITHUB
+  ALSO sign out and other api calls aren't working weird
+
+
+
+ITS APPENING THE CHARS ONE BY ONE INSTEAD OF ENTIRE REFRESHTOKEN
 trying to fix postgres models errors
 create the postgresql url to connect
 STORING REFRESHTOKEN IN COOKIE AND USING THAT TO GET REFRESHTOKEN
