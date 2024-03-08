@@ -77,9 +77,7 @@ function Dashboard() {
         
     }
 
-    if(!auth.hasOwnProperty('user')){
-        return <Navigate replace to="/login" />;
-    } else {
+    
         return (
             
             <body>
@@ -103,7 +101,7 @@ function Dashboard() {
     )
     }
     
-}
+
 
 export default Dashboard
 

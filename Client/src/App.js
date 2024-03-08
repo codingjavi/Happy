@@ -8,7 +8,7 @@ import Dashboard from './components/Dashboard';
 import Survey from './components/Survey';
 import Results from './components/Results';
 import Navbar from './components/Navbar';
-import RequiredAuth from './components/RequireAuth';
+import RequireAuth from './components/RequireAuth';
 import useToken from './components/useToken';
 import PersistLogin from './components/PersistLogin';
 
@@ -45,7 +45,7 @@ function App() {
           
           {/* protect routes */}
           <Route element={<PersistLogin />}>
-            <Route element={<RequiredAuth />}>
+            <Route element={<RequireAuth />}>
               <Route exact path='/dashboard' element={<Dashboard />}/>
               <Route exact path='/survey' element={<Survey />} />
               <Route exact path='/results' element={<Results />} />

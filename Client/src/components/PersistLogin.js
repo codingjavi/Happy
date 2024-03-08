@@ -9,12 +9,11 @@ const PersistLogin = () => {
     const { auth, persist } = useAuth();
 
     useEffect(() => {
-        let isMounted = true;
+        
 
         const verifyRefreshToken = async () => {
             try {
                 //get new access token
-                console.log("PERSISTING")
                 await refresh();
             }
             catch (err) {
@@ -22,29 +21,20 @@ const PersistLogin = () => {
             }
             //always runs finally (prevents ENDLESS ERROR LOOP)
             finally {
-                isMounted && setIsLoading(false);
+                setIsLoading(false);
             }
         }
 
         //only run if user doesnt have access token
-        !auth?.accessToken ? verifyRefreshToken() : setIsLoading(false);
+        //sets to false if we do have an accessToken to begin with
+        !auth?.accessToken && persist ? verifyRefreshToken() : setIsLoading(false);
     
-        return () => isMounted = false;
+        
     }, [])
 
-    useEffect(() => {
-        console.log(`is loading: ${isLoading}`)
-        console.log(`aT: ${JSON.stringify(auth?.accessToken)}`)
-    }, [isLoading])
-
     return (
-        <>  {/* loading or show child components */}
-            {!persist
-                ? <Outlet />
-                : isLoading
-                    ? <p>Loading...</p>
-                    : <Outlet />
-            }
+        <> 
+            {isLoading ? <p>Loading...</p> : <Outlet />}
         </>
     )
 }

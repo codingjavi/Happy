@@ -77,7 +77,7 @@ function Login(props) {
             //storing in global auth object
             //STORING ALL OF USERS INFO
                 //to conditionally render components, manage user sessions, control access to certain routes
-            setAuth({ user, pwd, roles, accessToken});
+            setAuth({ user, pwd, roles, accessToken });
             //localStorage.setItem("accessToken", accessToken)
             
             setUser('');

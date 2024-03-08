@@ -1,16 +1,18 @@
-import { useLocation, Navigate, Outlet } from "react-router-dom";
+import { useLocation, Navigate, Outlet, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
 
-const RequiredAuth = () => {
+const RequireAuth = () => {
     const { auth } = useAuth();
     const location = useLocation();
     //Outlet: child components protected by this require Auth
-    //from and replace: keeps track of where we were before incase we want to go back and where we want to go after login
+    //if user has accessToken then they can access this component
     return (
-        auth?.user
-            ? <Outlet />
-            : <Navigate to="/login" state={{ from: location }} replace />
+        auth?.accessToken
+            ? 
+                <Outlet />
+            :    
+                <Navigate to="/login" state={{ from: location }} replace />
     );
 }
 
-export default RequiredAuth;
+export default RequireAuth;

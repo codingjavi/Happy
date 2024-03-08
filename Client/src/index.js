@@ -7,11 +7,11 @@ import { AuthProvider } from './context/AuthProvider'; //provides context to our
   //provider makes sure all components have access to provided value
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <>
     <AuthProvider>
       <App />
     </AuthProvider>
-  </React.StrictMode>
+  </>
 );
 
 // If you want to start measuring performance in your app, pass a function
@@ -19,9 +19,8 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 /* 
-REFRESH TOKEN FUNC WORKS
-  NOW TRY TO FILTER ARRAY TO ONLY KEEP ONES THAT IT NEEDS LIKE IN GITHUB
-  ALSO sign out and other api calls aren't working weird
+fix the api log out and check vitamins
+  IT DOESNT WORK WHEN THE TOKEN IS EXPIRED (maybe backend problem)
 
 
 
