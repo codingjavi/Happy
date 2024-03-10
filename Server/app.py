@@ -974,7 +974,7 @@ def logout():
     if not user:
         return jsonify({'message': 'User not found'}), 204
     
-    user.refresh_token = None
+    user.refreshToken = []
     db.session.commit()
 
     response = jsonify({'message': 'Logged out successfully'})
