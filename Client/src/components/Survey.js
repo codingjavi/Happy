@@ -55,8 +55,8 @@ function Survey() {
                 method: 'post', 
                 url: '/api/eval', 
                 headers: { 'Authorization': 'Bearer ' + auth.accessToken, 'Content-Type': 'application/json' },
-                data : JSON.stringify({results})
-                    
+                data : JSON.stringify({results}),
+                withCredentials:true
             })
             /*this api call doesn work with Authorization headers
             const response = await axios.post(EVAL_URL, 

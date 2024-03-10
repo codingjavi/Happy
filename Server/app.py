@@ -53,7 +53,7 @@ class Note(db.Model):
     #all users vitamins have unique ids
         #autimatically sets id
     id = db.Column(db.Integer, primary_key = True)
-    vitamin = db.Column(db.String(10))
+    vitamin = db.Column(db.String(100))
     data = db.Column(db.String(1000))
     description = db.Column(db.String(10000))
     #using func to set time of added vitamin
@@ -137,7 +137,7 @@ def home():
     return render_template('home.html', user = current_user, checked = checked)
 
 @app.route("/api/eval", methods = ['POST', 'GET'])
-@jwt_required()
+#@jwt_required()
 def eval():
     
 
@@ -171,7 +171,15 @@ def eval():
     thyroid_description = "The thyroid is involved in producing hormones necessary for a stable emotional state, optimal metabolism, and normal body function. ReGenerZyme Thyroid was formulated to support the body with nutrients used to hydrate, balance, and restore the energy of the thyroid so it can function optimally."
 
     response =  jsonify({'message': 'POST request received successfully'})
-    current_user_id = get_jwt_identity()
+
+    refreshToken = request.cookies.get('jwt').strip() if 'jwt' in request.cookies else None
+    if not refreshToken:
+        return jsonify({'message': 'No JWT cookie found'}), 204 
+    
+    user = User.query.filter(User.refreshToken.any(refreshToken)).first()
+
+    if not user:
+        return jsonify({'message': 'User not found'}), 204
     if request.method == 'POST':
         #print("User id: " + current_user.id + "\n")
 
@@ -243,19 +251,19 @@ def eval():
         #ITS RUNNING NOW!! no need to do sessions anymore, BUT THE BUTTON DOESN'T WORK!!!
         if heart >= 8:
             
-            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 3 capsules before bed and 3 in the morning", description = heart_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 3 capsules before bed and 3 in the morning", description = heart_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif heart >= 5:
             
-            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 2 capsules before bed and 2 in the morning", description = heart_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 2 capsules before bed and 2 in the morning", description = heart_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif heart >= 3:
             
-            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 1 capsule before bed and 1 in the morning",description = heart_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 1 capsule before bed and 1 in the morning",description = heart_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
@@ -263,49 +271,49 @@ def eval():
 
 
         if immune == 8:
-            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 3 capsule before bed and 3 in the morning",description = immune_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 3 capsule before bed and 3 in the morning",description = immune_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif immune >= 5:
-            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 2 capsule before bed and 2 in the morning",description = immune_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 2 capsule before bed and 2 in the morning",description = immune_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif immune >= 2:
-            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 1 capsule before bed and 1 in the morning",description = immune_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 1 capsule before bed and 1 in the morning",description = immune_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
 
         if gastro == 6:
-            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 3 capsule before bed and 3 in the morning",description = gastro_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 3 capsule before bed and 3 in the morning",description = gastro_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif gastro >=3:
-            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 2 capsule before bed and 2 in the morning",description = gastro_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 2 capsule before bed and 2 in the morning",description = gastro_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif gastro >= 1:
-            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 1 capsule before bed and 1 in the morning",description = gastro_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 1 capsule before bed and 1 in the morning",description = gastro_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
 
         if kalmz == 8:#take more at night
-            new_vitamin = Note(vitamin = "Kalmz", data = "you need 4 capsule before bed",description = kalmz_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "Kalmz", data = "you need 4 capsule before bed",description = kalmz_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif kalmz >=4:
-            new_vitamin = Note(vitamin = "Kalmz", data = "you need 3 capsule before bed",description = kalmz_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "Kalmz", data = "you need 3 capsule before bed",description = kalmz_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif kalmz >= 1:
-            new_vitamin = Note(vitamin = "Kalmz", data = "you need 2 capsule before bed",description = kalmz_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "Kalmz", data = "you need 2 capsule before bed",description = kalmz_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
@@ -327,17 +335,17 @@ def eval():
         '''
 
         if thyroid >= 8:
-            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 3 capsule before bed",description = thyroid_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 3 capsule before bed",description = thyroid_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif thyroid >=4:
-            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 2 capsule before bed",description = thyroid_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 2 capsule before bed",description = thyroid_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
         elif thyroid >= 1:
-            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 1 capsule before bed",description = thyroid_description, user_id = current_user_id)
+            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 1 capsule before bed",description = thyroid_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
 
@@ -591,11 +599,21 @@ def eval_again():
     return render_template("eval.html", user = current_user, heart = heart)
 
 @app.route("/api/results")
-@jwt_required()
+#@jwt_required()
 def results():
-    current_user_id = get_jwt_identity()
+    #current_user_id = get_jwt_identity()
+
+    refreshToken = request.cookies.get('jwt').strip() if 'jwt' in request.cookies else None
+    if not refreshToken:
+        return jsonify({'message': 'No JWT cookie found'}), 204 
+    
+    user = User.query.filter(User.refreshToken.any(refreshToken)).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 204
+    
+
     #MAYBE PUT ALL OF IMAGES IN LIST AND RUN FOR LOOP IN HTML SO IMAGES COULD GO TO THE VERY TOP
-    new_vitamin = Note.query.filter_by(user_id = current_user_id).all()
+    new_vitamin = Note.query.filter_by(user_id = user.id).all()
     serialized_data = [{'id': note.id, 'vitamin': note.vitamin, 'data':note.data, 'description':note.description} for note in new_vitamin]
     
     return jsonify({'vitamins': serialized_data})
@@ -962,23 +980,6 @@ def logout():
     response = jsonify({'message': 'Logged out successfully'})
     response.delete_cookie('jwt', secure=True, httponly=True, samesite='None')
     return response, 204
-    '''
-    response = jsonify({"msg": "logout successful"})
-    #function automatically logs out current user
-    unset_jwt_cookies(response)
-    return response
-    '''
-'''
-@app.route('/refresh', methods=['GET'])
-@jwt_required(refresh=True)
-def handle_refresh_token():
-    
-    print("TESTSTTTTTT")
-    
-    accessToken = create_access_token(identity=get_jwt_identity())
-    print(accessToken)
-    return jsonify({'accessToken':accessToken})
-    '''
         
 
 if __name__ == '__main__':

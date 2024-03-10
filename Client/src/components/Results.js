@@ -16,8 +16,8 @@ function Results() {
                 const response = await axios({ 
                     method: 'get', 
                     url: '/api/results', 
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('accessToken'), 'Content-Type': 'application/json' }
-                        
+                    headers: { 'Authorization': 'Bearer ' + auth.accessToken, 'Content-Type': 'application/json' },
+                    withCredentials: true
                 })
                 setVitamins(response.data.vitamins);
                 console.log(response.data.vitamins);
