@@ -2,14 +2,21 @@ import React, {useContext} from 'react'
 import axios from '../api/axios';
 import AuthContext from '../context/AuthProvider';
 import { useNavigate, Link } from 'react-router-dom';
-const LOGOUT_URL = '/logout';
+import useLogout from '../hooks/useLogout';
+
 
 function Navbar() {
   const navigate = useNavigate();
   const { auth, setAuth } = useContext(AuthContext);
+  const logout = useLogout();
+
   const handleSignOut = async() => {
-    
-    
+
+    await logout();
+    navigate('/');
+
+
+    /*
     try {
       const response = await axios({ 
           method: 'post', 
@@ -17,7 +24,7 @@ function Navbar() {
           headers: { 'Authorization': 'Bearer ' + auth.accessToken, 'Content-Type': 'application/json' },
               
       })
-      localStorage.removeItem('token'); // Remove JWT from local storage
+      
       navigate('/login');
       console.log(response);
 
@@ -35,7 +42,7 @@ function Navbar() {
               // Something happened in setting up the request that triggered an Error
               console.error('Error', err.message);
           }
-      };
+      };*/
   }
 return (
   <nav className='navbar'>

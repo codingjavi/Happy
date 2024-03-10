@@ -944,15 +944,30 @@ def refresh_expiring_jwts(response):
         # Case where there is not a valid JWT. Just return the original respone
         return response
 '''
-@app.route("/logout", methods=["POST"])
+@app.route("/logout", methods=["GET"])
 #can only access logout if logged in
-@jwt_required()
+
 def logout():
+    refreshToken = request.cookies.get('jwt').strip() if 'jwt' in request.cookies else None
+    if not refreshToken:
+        return jsonify({'message': 'No JWT cookie found'}), 204 
+    
+    user = User.query.filter(User.refreshToken.any(refreshToken)).first()
+    if not user:
+        return jsonify({'message': 'User not found'}), 204
+    
+    user.refresh_token = None
+    db.session.commit()
+
+    response = jsonify({'message': 'Logged out successfully'})
+    response.delete_cookie('jwt', secure=True, httponly=True, samesite='None')
+    return response, 204
+    '''
     response = jsonify({"msg": "logout successful"})
     #function automatically logs out current user
     unset_jwt_cookies(response)
     return response
-
+    '''
 '''
 @app.route('/refresh', methods=['GET'])
 @jwt_required(refresh=True)
