@@ -96,7 +96,6 @@ function Dashboard() {
                     <h2> <Link to="/results"> Check your vitamins here! </Link></h2>
                     <p>Keep track of you vitamins here</p>
                 </div>
-                <button onClick={() => refresh()}></button>
             </body>
     )
     }
