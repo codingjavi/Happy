@@ -19,14 +19,7 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 /* 
-add "get evaluated AGAIN" functionality
-  if vitamins already exists for the user then replace the old with new ones
-or remove vitamin button
-add section for all the vitamins
-buying functionality (add vitamin to cart?)
-maybe refresh token database filter thing
-fix styling
-previous vitamins section
+
 
 
 
