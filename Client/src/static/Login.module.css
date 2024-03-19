@@ -27,15 +27,29 @@ body {
   padding: 1rem 0.5rem;
 } 
 
-section {
+.login {
     width: 100%;
     max-width: 420px;
     min-height: 400px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     padding: 1rem;
     background-color: rgba(0,0,0,0.4);
+}
+
+.h1 {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: black; /* Adjust the color as needed */
+    font-size: 40px; /* Adjust the font size as needed */
+    font-weight: bold; /* Adjust the font weight as needed */
+    margin: 0; /* Remove any default margin */
+    padding: 10px; /* Add padding as needed */
+    z-index: 1; 
 }
 
 form {

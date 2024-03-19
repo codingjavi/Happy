@@ -115,9 +115,9 @@ function Login(props) {
 
     return (
         <>
-            
+            <h1 className={styles.h1}>Happy Health</h1>
         <section className={styles.login}>
-            <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+            <p ref={errRef} className={errMsg ? styles.errmsg : styles.offscreen} aria-live="assertive">{errMsg}</p>
             <h1>Sign In</h1>
             <form onSubmit={handleSubmit}>
                 <label htmlFor='username'>Username</label>

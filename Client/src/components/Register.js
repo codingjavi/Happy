@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from '../api/axios';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthProvider';
+import styles from '../static/Register.module.css';
 //regex: how we're validating user and password
   //[]: start with lower case or upper case a - z
   //2nd []: can be followed by upper or lower a -z and 0-9 or - _
@@ -137,22 +138,23 @@ function Register() {
               </p>
           </section>
       ) : (
-        <section>
+        
+        <section className={styles.login}>
           {/* if errMsg truthy then errmsg css which displays it
               else: put it offscreen (not entirly out of document)
               aria-live="assertive": when put focus on errRef then ANNOUNCED THROUGH SCREEN READER
           */}
-          <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+          <p ref={errRef} className={errMsg ? styles.errMsg : styles.offscreen} aria-live="assertive">{errMsg}</p>
           <h1>Register</h1>
           <form onSubmit={handleSubmit}>
               <label htmlFor='username'>
                 Username
                 {/*CHECK MARK if valid username */}
-                <span className={validName ? "valid" : "hide"}>
+                <span className={validName ? styles.valid : styles.hide}>
                   <FontAwesomeIcon icon={faCheck} />
                 </span>
                 {/*X if not valid */}
-                <span className={validName || !user ? "hide" : "invalid"}>
+                <span className={validName || !user ? styles.hide : styles.invalid}>
                   <FontAwesomeIcon icon={faTimes}/>
                 </span>
               </label>
@@ -176,7 +178,7 @@ function Register() {
                   onBlur={() => setUserFocus(false)}
               />
               {/* show instructions conditional */}
-              <p id='uidnote' className={userFocus && user && !validName ? "instructions" : "offscreen"}>
+              <p id='uidnote' className={userFocus && user && !validName ? styles.instructions : styles.offscreen}>
                 <FontAwesomeIcon icon={faInfoCircle} />
                 4 to 24 characters. <br />
                 Must begin with a letter. <br />
@@ -187,10 +189,10 @@ function Register() {
               {/*never going to set focus on password, just tab to it*/ }
               <label htmlFor='password'>
                 Password
-                <span className={validPwd ? "valid" : "hide"}>
+                <span className={validPwd ? styles.valid : styles.hide}>
                   <FontAwesomeIcon icon={faCheck} />
                 </span>
-                <span className={validPwd || !user ? "hide" : "invalid"}>
+                <span className={validPwd || !user ? styles.hide : styles.invalid}>
                   <FontAwesomeIcon icon={faTimes}/>
                 </span>
               </label>
@@ -206,7 +208,7 @@ function Register() {
                   onFocus={() => setPwdFocus(true)}
                   onBlur={() => setPwdFocus(false)}
               />
-              <p id='pwdnote' className={pwdFocus && !validPwd ? "instructions" : "offscreen"}>
+              <p id='pwdnote' className={pwdFocus && !validPwd ? styles.instructions : styles.offscreen}>
                 <FontAwesomeIcon icon={faInfoCircle} />
                 {/* using aria-label: so screen reader can read description */}
                 8 to 24 characters.<br />
@@ -217,10 +219,10 @@ function Register() {
 
               <label htmlFor='confirm_pwd'>
                 Confirm Password
-                <span className={validMatch && matchPwd ? "valid" : "hide"}>
+                <span className={validMatch && matchPwd ? styles.valid : styles.hide}>
                   <FontAwesomeIcon icon={faCheck} />
                 </span>
-                <span className={validMatch || !matchPwd ? "hide" : "invalid"}>
+                <span className={validMatch || !matchPwd ? styles.hide : styles.invalid}>
                   <FontAwesomeIcon icon={faTimes}/>
                 </span>
               </label>
@@ -235,7 +237,7 @@ function Register() {
                 onFocus={() => setMatchFocus(true)}
                 onBlur={() => setMatchFocus(false)}
               />
-              <p id='confirmnote' className={matchFocus && !validMatch ? "instructions" : "offscreen"}>
+              <p id='confirmnote' className={matchFocus && !validMatch ? styles.instructions : styles.offscreen}>
                 <FontAwesomeIcon icon={faInfoCircle} />
                 Must match the first password input field.
               </p>
@@ -245,7 +247,7 @@ function Register() {
           </form>
           <p>
             Already registered? <br />
-            <span className='line'>
+            <span className={styles.line}>
               <Link to ="/login"> Sign In </Link>
             </span>
           </p>
