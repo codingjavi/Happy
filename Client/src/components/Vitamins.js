@@ -2,20 +2,18 @@ import React from 'react';
 import styles from '../static/Vitamins.module.css';
 //import '../styles/tailwind.css';
 function Vitamins(props) {
-    //load picture
-    //maybe use section insetad of div
-    const imagePath = `/assets/images/${props.vitamin.replace(/\s/g, '')}.jpg`
-    //const imagePath = "/assets/images/ReGenerZyme%20Heart.jpg"
+    const imagePath = `/assets/images/${props.vitamin.replace(/\s/g, '')}.jpg`;
+
     return (
-        <div>
-            <img className={styles.img}src={imagePath} />
-            <section>
-                {props.vitamin}
-                {props.data}
-                {props.description}
+        <div className={styles.container}>
+            <img className={styles.img} src={imagePath} />
+            <section className={styles.info}>
+                <h2>{props.vitamin}</h2>
+                <p>{props.data}</p>
+                <p>{props.description}</p>
             </section>
         </div>
-    )
-}
+    );
+} 
 
 export default Vitamins

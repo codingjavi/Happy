@@ -19,7 +19,21 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 /* 
+fix login and registering styling like dave
 
+add section for all the vitamins
+  previous viatmins section
+buying functionality (add vitamin to cart?) - stripe or paypal
+  #buy
+  #handling buying and sending (Stripe)
+  #page for add to cart and check out 
+  #email for confitmation
+
+or just have link redirection
+
+maybe refresh token database filter thing
+
+fix styling
 
 
 
