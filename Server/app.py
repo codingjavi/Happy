@@ -19,6 +19,7 @@ import base64
 import io
 from datetime import datetime, timedelta, timezone
 import json
+import pickle
 
 #using current_user object to access all of the info about the currently logged in user
 
@@ -28,6 +29,7 @@ import json
 
 #blueprint = Blueprint('blueprint', __name__)
 app = Flask(__name__)
+model = pickle.load(open('model.pkl', 'rb'))
 #cors = CORS(app, resources={r'/api/*': {'origins': 'http://localhost:3000'}})
 #CORS(app)
 '''
@@ -199,57 +201,6 @@ def eval():
         kalmz = data['kalmz']
         gastro = data['gastro']
         
-        '''
-        if request.form['submit_button'] == 'checked':
-            flash('Evaluation complete!, click results to see results', category='success')
-
-        for i in range(8):
-            if request.form.get('heart' + str(i)):
-                heart += 1
-        #for checkboxes with same values
-        #if request.form.get('inspira0'):
-            #heart += 1
-
-        for i in range(8):
-            if request.form.get('immune' + str(i)):
-                immune += 1
-
-        for i in range(6):
-            if request.form.get('gastro' + str(i)):
-                gastro += 1
-
-        for i in range(8):
-            if request.form.get('kalmz' + str(i)):
-                kalmz += 1
-
-        for i in range(7):
-            if request.form.get('adrenal' + str(i)):
-                adrenal += 1
-
-        for i in range(7):
-            if request.form.get('thyroid' + str(i)):
-                thyroid += 1
-
-        #avoiding repeating questions
-        #high cholesterol
-        if request.form.get('adrenal1'):
-            thyroid += 1
-
-        #unhealthy food
-        if request.form.get('immune2'):
-            thyroid += 1
-
-        #depression
-        if request.form.get('kalmz1'):
-            thyroid += 1
-        
-        #irregular or no mestrual cycles
-        if request.form.get('adrenal6'):
-            thyroid += 1
-
-        if request.form.get('adrenal2'):
-            immune += 1
-        '''
         
             #vitamin = "heart",
             #the vitamin
@@ -383,133 +334,7 @@ def results():
     serialized_data = [{'id': note.id, 'vitamin': note.vitamin, 'data':note.data, 'description':note.description} for note in new_vitamin]
     
     return jsonify({'vitamins': serialized_data})
-    '''
-    images = []
-
-    #displaying pictures
-    heart_im = None
-    immune_im = None
-    gastro_im = None
-    kalmz_im = None
-    
-
-    #maybe have to query from database
-    #vitamin = Note.query.get_or_404(id)
-    #vitamin_list = Note.query.all()
-    
-
-    heart_image = null
-    immune_image = null
-    gastro_image = null
-    kalmz_image = null
-
-    #for what images to pass
-    for i in new_vitamin:
-        
-        if i.vitamin == "ReGenerZyme Heart":
-            
-            heart_im = Image.open("Heart.jpg")
-
-        #using BytesIO we get the in-memory info to save the image we just read
-            data_image = io.BytesIO()
-
-        #saving it as JPEG
-            heart_im.save(data_image, "JPEG")
-
-        #Then encode saved image file.
-            encoded_img_data = base64.b64encode(data_image.getvalue())
-            heart_image = encoded_img_data.decode('utf-8')
-
-            images.append(heart_image)
-
-        if i.vitamin == "Immune-Rmor":
-        
-            
-            immune_im = Image.open("Immune.jpg")
-
-            #using BytesIO we get the in-memory info to save the image we just read
-            data_image_immune = io.BytesIO()
-
-            #saving it as JPEG
-            immune_im.save(data_image_immune, "JPEG")
-
-            #Then encode saved image file.
-            encoded_img_data_immune = base64.b64encode(data_image_immune.getvalue())
-
-            immune_image = encoded_img_data_immune.decode('utf-8')
-
-            images.append(immune_image)
-
-        if i.vitamin == "Gastro-Digest II":
-        
-            
-            gastro_im = Image.open("gastro.jpg")
-
-            #using BytesIO we get the in-memory info to save the image we just read
-            data_image_gastro = io.BytesIO()
-
-            #saving it as JPEG
-            gastro_im.save(data_image_gastro, "JPEG")
-
-            #Then encode saved image file.
-            encoded_img_data_gastro = base64.b64encode(data_image_gastro.getvalue())
-
-            gastro_image = encoded_img_data_gastro.decode('utf-8')
-
-            images.append(gastro_image)
-
-        if i.vitamin == "Kalmz":
-        
-            
-            kalmz_im = Image.open("Kalmz.jpg")
-
-            #using BytesIO we get the in-memory info to save the image we just read
-            data_image_kalmz = io.BytesIO()
-
-            #saving it as JPEG
-            kalmz_im.save(data_image_kalmz, "JPEG")
-
-            #Then encode saved image file.
-            encoded_img_data_kalmz = base64.b64encode(data_image_kalmz.getvalue())
-
-            kalmz_image = encoded_img_data_kalmz.decode('utf-8')
-
-            images.append(kalmz_image)
-        if i.vitamin == "ReGenerZyme Adrenal":
-        
-            
-            adrenal_im = Image.open("adrenal.jpg")
-
-            #using BytesIO we get the in-memory info to save the image we just read
-            data_image_adrenal = io.BytesIO()
-
-            #saving it as JPEG
-            adrenal_im.save(data_image_adrenal, "JPEG")
-
-            #Then encode saved image file.
-            encoded_img_data_adrenal = base64.b64encode(data_image_adrenal.getvalue())
-
-            adrenal_image = encoded_img_data_adrenal.decode('utf-8')
-
-            images.append(adrenal_image)
-        if i.vitamin == "ReGenerZyme Thyroid":
-        
-            
-            thyroid_im = Image.open("Thyroid.jpg")
-
-            #using BytesIO we get the in-memory info to save the image we just read
-            data_image_thyroid = io.BytesIO()
-
-            #saving it as JPEG
-            thyroid_im.save(data_image_thyroid, "JPEG")
-
-            #Then encode saved image file.
-            encoded_img_data_thyroid = base64.b64encode(data_image_thyroid.getvalue())
-
-            thyroid_image = encoded_img_data_thyroid.decode('utf-8')
-
-            images.append(thyroid_image)
-        '''
+   
     
 #heart_image = heart_image, immune_image = immune_image, gastro_image = gastro_image, kalmz_image = kalmz_image
     #return render_template("results.html", user = current_user, images = images)
