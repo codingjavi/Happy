@@ -40,10 +40,6 @@ export default [
         organ: "immune"
     },
     {
-        question: "Do you cosume alot of unhealthy/fast food?",
-        organ: "immune"
-    },
-    {
         question: "Do you drink alcohol or smoke?",
         organ: "immune"
     },

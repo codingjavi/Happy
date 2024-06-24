@@ -194,12 +194,96 @@ def eval():
         db.session.commit()
 
         data = request.get_json()
-        data = data['results']
+        print(data)
+        prediction = model.predict(data)
+        print(prediction)
+
+        #Heart
+        if prediction[0][0] == 3:
+            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 3 capsules before bed and 3 in the morning", description = heart_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+        elif prediction[0][0] == 2:
+            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 3 capsules before bed and 1 in the morning", description = heart_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+        elif prediction[0][0] == 1:
+            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 2 capsules before bed", description = heart_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        #Immune
+        if prediction[0][1] == 3:
+            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 3 capsule before bed and 3 in the morning",description = immune_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        elif prediction[0][1] == 2:
+            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 2 capsule before bed and 2 in the morning",description = immune_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        elif prediction[0][1] == 1:
+            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 1 capsule before bed and 1 in the morning",description = immune_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        #Gastro
+        if prediction[0][2] == 3:
+            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 3 capsule before bed and 3 in the morning",description = gastro_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        elif prediction[0][2] == 2:
+            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 2 capsule before bed and 2 in the morning",description = gastro_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        elif prediction[0][2] == 1:
+            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 1 capsule before bed and 1 in the morning",description = gastro_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        #Kalmz
+        if prediction[0][3] == 3:#take more at night
+            new_vitamin = Note(vitamin = "Kalmz", data = "you need 3 capsule before bed and 2 in the morning",description = kalmz_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        elif prediction[0][3] == 2:
+            new_vitamin = Note(vitamin = "Kalmz", data = "you need 3 capsule before bed",description = kalmz_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        elif prediction[0][3] == 1:
+            new_vitamin = Note(vitamin = "Kalmz", data = "you need 2 capsule before bed",description = kalmz_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+        
+        #Thryroid
+        if prediction[0][4] == 3:
+            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 3 capsule before bed",description = thyroid_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        elif prediction[0][4] == 2:
+            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 2 capsule before bed",description = thyroid_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        elif prediction[0][4] == 1:
+            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 1 capsule before bed",description = thyroid_description, user_id = user.id)
+            db.session.add(new_vitamin)
+            db.session.commit()
+
+        '''
         heart = data['heart']
         immune = data['immune']
         thyroid = data['thyroid']
         kalmz = data['kalmz']
         gastro = data['gastro']
+
+
         
         
             #vitamin = "heart",
@@ -275,7 +359,7 @@ def eval():
             db.session.add(new_vitamin)
             db.session.commit()
 
-        '''
+        
         if adrenal == 7:
             new_vitamin = Note(vitamin = "ReGenerZyme Adrenal", data = "you need 1 capsule before bed and 1 in the morning",description = adrenal_description, user_id = current_user.id)
             db.session.add(new_vitamin)
@@ -290,7 +374,7 @@ def eval():
             new_vitamin = Note(vitamin = "ReGenerZyme Adrenal", data = "you need 1 capsule before bed and 1 in the morning",description = adrenal_description, user_id = current_user.id)
             db.session.add(new_vitamin)
             db.session.commit()
-        '''
+        
 
         if thyroid >= 8:
             new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 3 capsule before bed",description = thyroid_description, user_id = user.id)
@@ -306,7 +390,7 @@ def eval():
             new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 1 capsule before bed",description = thyroid_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
-
+        '''
         
     #session['heart'] = heart
 

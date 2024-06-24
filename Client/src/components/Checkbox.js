@@ -8,7 +8,7 @@ function Checkbox(props) {
             type='checkbox'
             id='box'
             name={props.organ}
-            onChange={props.handleCheck}
+            onChange={() => props.handleCheck(props.index)}
         />
         <br />
     </div>

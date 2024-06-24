@@ -18,32 +18,25 @@ function Survey() {
     const navigate = useNavigate();
     const EVAL_URL = '/api/eval';
     //maybe create a context where i can make the setResults function available to certain components
-    const [results, setResults] = useState({
-        heart : 0,
-        immune : 0,
-        thyroid : 0,
-        spleen : 0,
-        kalmz : 0,
-        gastro : 0
-    });
+    const [results, setResults] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
     //using map to create an array of components(checkboxes) we can display
-    const surveyElements = surveyData.map(item => {
-        return <Checkbox question={item.question} organ={item.organ} handleCheck={handleChange}/>
+    const surveyElements = surveyData.map((item, index) => {
+        return <Checkbox key={index} index={index} question={item.question} organ={item.organ} handleCheck={handleChange}/>
     })
 
-    function handleChange(event) {
+    //maybe each question has a corr index
+    //maybe time (for loop)
+    function handleChange(index) {
+        console.log(index)
         console.log(results)
-        const name = event.target.name;
-        setResults((prev) => {
-            return {
-                ...prev,
-                [name] : prev[name] + (event.target.checked ? 1 : -1)
-            }
-            
-        })
         
-    }
+        setResults((prev) => {
+            const newRes = [...prev];
+            newRes[index] = newRes[index] === 1 ? 0 :1;
+            return newRes;
+        });
+    };
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -55,7 +48,7 @@ function Survey() {
                 method: 'post', 
                 url: '/api/eval', 
                 headers: { 'Authorization': 'Bearer ' + auth.accessToken, 'Content-Type': 'application/json' },
-                data : JSON.stringify({results}),
+                data : JSON.stringify([results]),
                 withCredentials:true
             })
             /*this api call doesn work with Authorization headers
