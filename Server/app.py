@@ -30,16 +30,7 @@ import pickle
 #blueprint = Blueprint('blueprint', __name__)
 app = Flask(__name__)
 model = pickle.load(open('model.pkl', 'rb'))
-#cors = CORS(app, resources={r'/api/*': {'origins': 'http://localhost:3000'}})
-#CORS(app)
-'''
-cors = CORS(app)
 
-cors = CORS(app, resource={
-    r"/*":{
-        "origins":"*"
-    }
-})'''
 app.config['CORS_HEADERS'] = 'Content-Type'
 #storing databse in this folder
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:ToProGamer@localhost:5432/master'
@@ -84,23 +75,6 @@ class User(db.Model):
             #like a list
     notes = db.relationship('Note', backref='user', cascade='all, delete-orphan', lazy='dynamic')
 
-'''
-#setting up login manager
-login_manager = LoginManager()
-#Where do we need to go if not logged in(to login page)
-login_manager.login_view = 'login' #or '/login
-#which app we're using
-login_manager.init_app(app)
-
-#using this function to load user
-    #telling flask how to load a user(telling flask what user we're looking)
-@login_manager.user_loader
-def load_user(id):
-    #looking for primary key
-    return User.query.get(int(id))
-    #return User(id)
-'''
-
 #@blueprint.after_request 
 def after_request(response):
     header = response.headers
@@ -115,61 +89,16 @@ def dashboard():
     print(current_user_id)
     return jsonify({'message': 'POST request received successfully'})
 
-@app.route("/home", methods = ['GET', 'POST'])
-def home():
-    #current user is checking if there's currenlty a user logged in
-    
-    #to check if user has already been evaluated
-    checked = 0
-    ''' SESSION DOESNT TRACK SPECIFICALLY FOR USER SO MIGHT CHECK FOR SOMETHING IN THE DATABASE TO SEE IF THEY ALREADY TOOK THE TEST
-    if "checked" in session:
-        print("checcking for sessino checking")
-        checked = session["checked"]
-        print(checked)
-        '''
-    #maybe try QUERING vitamins from database to see if we queried anything
-    new_vitamin = Note.query.filter_by(user_id = current_user.id).all()
-    
-    #IT WORKED!!! :))
-    for i in new_vitamin:
-        
-        if i.vitamin == "heart" or "Immune-Rmor" or "Gastro-Digest II" or "Kalmz" or "ReGenerZyme Adrenal" or "ReGenerZyme Thyroid":
-            checked = 1
-        
-    return render_template('home.html', user = current_user, checked = checked)
-
 @app.route("/api/eval", methods = ['POST', 'GET'])
 #@jwt_required()
 def eval():
-    
-
-
-    '''if evaluated == True:
-        db.session.delete(new_vitamin)
-        db.session.commit()
-        evaluated = False
-
-
-    #if its the first time running evaluation
-    evaluated = True'''
 
     #the different types of vitamins
-    heart = 0
     heart_description = "The heart is the hardest working muscle of the body. It continually contracts and relaxes (beating over 100,000 times every day), delivering life-giving blood to every organ, gland, cell, and structure of the body. ReGenerZyme Heart supports and restores the heart as well as other muscles of the body. It is excellent nutrition for athletes and others who want to optimize heart and muscle function."
-    
-    immune = 0
     immune_description = "Immune-Rmor (immune armor) is immune system support and restoration formula that nourishes the spleen, lymph, pituitary, and thymus glands. A healthy immune system is able to distinguish between a healthy cell and tissue and unwanted invaders. It is our body’s armor against unwanted bacteria, viruses, parasites, fungi, etc."
-
-    gastro = 0
     gastro_description = "Gastro-Digest II is a two-stage formula designed to support digestion. The first stage assists the stomach where acid is used to break down proteins. The second stage of the formula is enteric coated, which protects the ingredients from the stomach acid. They remain intact to be utilized by the gallbladder, liver, pancreas and intestine where the major part of digestion and nutrient assimilation occurs."
-    
-    kalmz = 0
     kalmz_description = "Kalmz provides nutritional support for the body that needs to release physical pain and emotional stress. It also calms the toxic chaos that may overwhelm the body by denaturing (neutralizing) toxins from food, emotions, and/or the environment."
-    
-    adrenal = 0
     adrenal_description = "When stress is high and hormones are low the adrenals come to the rescue. ReGenerZyme Adrenal provides nutritional resources so the adrenals can rest, restore and function optimally. The 7-Keto DHEA in the formula supports both the thyroid and adrenals."
-    
-    thyroid = 0
     thyroid_description = "The thyroid is involved in producing hormones necessary for a stable emotional state, optimal metabolism, and normal body function. ReGenerZyme Thyroid was formulated to support the body with nutrients used to hydrate, balance, and restore the energy of the thyroid so it can function optimally."
 
     response =  jsonify({'message': 'POST request received successfully'})
@@ -275,126 +204,6 @@ def eval():
             new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 1 capsule before bed",description = thyroid_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
-
-        '''
-        heart = data['heart']
-        immune = data['immune']
-        thyroid = data['thyroid']
-        kalmz = data['kalmz']
-        gastro = data['gastro']
-
-
-        
-        
-            #vitamin = "heart",
-            #the vitamin
-            #how many to take
-            #description
-        #ITS RUNNING NOW!! no need to do sessions anymore, BUT THE BUTTON DOESN'T WORK!!!
-        if heart >= 8:
-            
-            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 3 capsules before bed and 3 in the morning", description = heart_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif heart >= 5:
-            
-            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 2 capsules before bed and 2 in the morning", description = heart_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif heart >= 3:
-            
-            new_vitamin = Note(vitamin = "ReGenerZyme Heart", data = "you need 1 capsule before bed and 1 in the morning",description = heart_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-
-
-
-        if immune == 8:
-            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 3 capsule before bed and 3 in the morning",description = immune_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif immune >= 5:
-            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 2 capsule before bed and 2 in the morning",description = immune_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif immune >= 2:
-            new_vitamin = Note(vitamin = "Immune-Rmor", data = "you need 1 capsule before bed and 1 in the morning",description = immune_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-
-        if gastro == 6:
-            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 3 capsule before bed and 3 in the morning",description = gastro_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif gastro >=3:
-            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 2 capsule before bed and 2 in the morning",description = gastro_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif gastro >= 1:
-            new_vitamin = Note(vitamin = "Gastro-Digest II", data = "you need 1 capsule before bed and 1 in the morning",description = gastro_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-
-        if kalmz == 8:#take more at night
-            new_vitamin = Note(vitamin = "Kalmz", data = "you need 4 capsule before bed",description = kalmz_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif kalmz >=4:
-            new_vitamin = Note(vitamin = "Kalmz", data = "you need 3 capsule before bed",description = kalmz_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif kalmz >= 1:
-            new_vitamin = Note(vitamin = "Kalmz", data = "you need 2 capsule before bed",description = kalmz_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        
-        if adrenal == 7:
-            new_vitamin = Note(vitamin = "ReGenerZyme Adrenal", data = "you need 1 capsule before bed and 1 in the morning",description = adrenal_description, user_id = current_user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif adrenal >=4:
-            new_vitamin = Note(vitamin = "ReGenerZyme Adrenal", data = "you need 1 capsule before bed and 1 in the morning",description = adrenal_description, user_id = current_user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif adrenal >= 1:
-            new_vitamin = Note(vitamin = "ReGenerZyme Adrenal", data = "you need 1 capsule before bed and 1 in the morning",description = adrenal_description, user_id = current_user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-        
-
-        if thyroid >= 8:
-            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 3 capsule before bed",description = thyroid_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif thyroid >=4:
-            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 2 capsule before bed",description = thyroid_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-
-        elif thyroid >= 1:
-            new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 1 capsule before bed",description = thyroid_description, user_id = user.id)
-            db.session.add(new_vitamin)
-            db.session.commit()
-        '''
-        
-    #session['heart'] = heart
-
-    #maybe request.form(button here to take me to /results)
         
     #return render_template("eval.html", user = current_user, heart = heart)
     return response
@@ -418,16 +227,6 @@ def results():
     serialized_data = [{'id': note.id, 'vitamin': note.vitamin, 'data':note.data, 'description':note.description} for note in new_vitamin]
     
     return jsonify({'vitamins': serialized_data})
-   
-    
-#heart_image = heart_image, immune_image = immune_image, gastro_image = gastro_image, kalmz_image = kalmz_image
-    #return render_template("results.html", user = current_user, images = images)
-
-
-#home page
-@app.route("/")
-def index():
-    return render_template("index.html")
 
 #creating our login page
 @app.route("/login", methods = ['GET', 'POST'])
@@ -466,13 +265,6 @@ def login():
                 db.session.execute(sql_query, {"token": newRefreshToken, "user_id": user.id})
                 db.session.commit()
 
-                #flash('Logged in succesfully', category = 'success')
-                
-                #logging in user and remembering that the user is logged in until clear website
-                #login_user(user, remember = True)
-                #REDIRECTING in server
-                #if logged in go to home page(somewhere else)
-                #return redirect("/home")
                 response = make_response(jsonify({'accessToken':accessToken}))
 
                     # Setting a cookie
@@ -492,16 +284,6 @@ def login():
     #return render_template("login.html", user = current_user)
     return jsonify({'message': 'POST request received successfully'})
     #dont really need current_user because we aren't using nav bar here
-
-'''
-@app.route('/api/data', methods=['OPTIONS'])
-def handle_options_request():
-    response = jsonify()
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    return response
-'''
 
 @app.after_request
 def after_request_func(response):
@@ -582,12 +364,7 @@ def refresh():
     print("\n\n" + refreshToken + "\n\n")
     #user = User.query.filter_by(refreshToken=refreshToken).first()
     user = User.query.filter(User.refreshToken.any(refreshToken)).first()
-    '''
-    query = text("SELECT * FROM user WHERE :token = ANY (refreshToken)")
-    query = query.columns(column('refreshToken'))
-    user = db.session.execute(query, {'token': refreshToken}).fetchone()
-    '''
-    print("\n\ntestttttt\n\n")
+    
     if user:
 
         print(user)
@@ -619,24 +396,6 @@ def refresh():
         print(user)
         return jsonify({'error': 'error'})
     
-'''
-@app.after_request
-def refresh_expiring_jwts(response):
-    try:
-        exp_timestamp = get_jwt()["exp"]
-        now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
-        if target_timestamp > exp_timestamp:
-            access_token = create_access_token(identity=get_jwt_identity())
-            data = response.get_json()
-            if type(data) is dict:
-                data["access_token"] = access_token 
-                response.data = json.dumps(data)
-        return response
-    except (RuntimeError, KeyError):
-        # Case where there is not a valid JWT. Just return the original respone
-        return response
-'''
 @app.route("/logout", methods=["GET"])
 #can only access logout if logged in
 
