@@ -1,24 +1,12 @@
 from crypt import methods
-from flask import Flask, render_template, url_for, request, flash, session, redirect, jsonify, make_response, Blueprint, abort
+from flask import Flask, request,jsonify, make_response, abort
 from flask_sqlalchemy import SQLAlchemy
-#user object inherithing from UxerMixin(helps users log in)
-#from flask_login import UserMixin
-from sqlalchemy import null, ForeignKey, func, text, column
-#from sqlalchemy.sql import func
-#encrypts passwords 
+from sqlalchemy import func, text
 from werkzeug.security import generate_password_hash, check_password_hash
-#from flask_login import login_user, login_required, logout_user, current_user, LoginManager
-from flask_cors import CORS, cross_origin
-import jwt
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity, unset_jwt_cookies, get_jwt,get_jwt_identity
-#from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity, unset_jwt_cookies, get_jwt, jwt_refresh_token_required
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt_identity
 from functools import wraps
-import urllib.request
 from PIL import Image
-import base64
-import io
-from datetime import datetime, timedelta, timezone
-import json
+from datetime import timedelta
 import pickle
 
 #using current_user object to access all of the info about the currently logged in user
@@ -28,7 +16,12 @@ import pickle
     #but can't hash password -> password
 
 #blueprint = Blueprint('blueprint', __name__)
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_url_path='',
+    static_folder='../Client/build',
+    template_folder='../Client/build'
+    )
 model = pickle.load(open('model.pkl', 'rb'))
 
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -310,7 +303,6 @@ def after_request_func(response):
 
 #creating register page
 @app.route("/api/register", methods = ['GET', 'POST', "OPTIONS"])
-@cross_origin()
 def register():
     
     data = request.get_json()
