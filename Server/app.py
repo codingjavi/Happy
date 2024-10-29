@@ -1,5 +1,5 @@
 from crypt import methods
-from flask import Flask, request,jsonify, make_response, abort
+from flask import Flask, request,jsonify, make_response, abort, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, text
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,13 +9,6 @@ from PIL import Image
 from datetime import timedelta
 import pickle
 
-#using current_user object to access all of the info about the currently logged in user
-
-#hashing function is a one way function that does not have an inverse(like math)
-    #password -> hash password
-    #but can't hash password -> password
-
-#blueprint = Blueprint('blueprint', __name__)
 app = Flask(
     __name__,
     static_url_path='',
@@ -31,30 +24,17 @@ jwt = JWTManager(app)
 db = SQLAlchemy(app)
 
 
-#
-#db.Model is blueprint for an object thats going to stored in database(all notes need to look like this)
+#Vitamins
 class Note(db.Model):
     __tablename__ = 'notes'
 
-    #all users vitamins have unique ids
-        #autimatically sets id
     id = db.Column(db.Integer, primary_key = True)
     vitamin = db.Column(db.String(100))
     data = db.Column(db.String(1000))
     description = db.Column(db.String(10000))
-    #using func to set time of added vitamin
     date = db.Column(db.DateTime(timezone = True), server_default=func.now())
-    #associating vitamins with user with foreign key(references a column of another database)
-        #by storing id of user into this note
-            #always references the user
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-
-#can create another thing to store like
-#class Reminder(db.Model)
-    #have to give it proper atributes(look at sqlalchemy.com) and foreignKey for one to many relationship
-
-#how we're storing user input into database
 class User(db.Model):
     __tablename__ = 'user'
 
@@ -63,17 +43,17 @@ class User(db.Model):
     name = db.Column(db.String(150))
     password = db.Column(db.String(150))
     refreshToken = db.Column(db.ARRAY(db.String), nullable=True)
-    #tell every time we create vitamin add in that vitamin id into notes(storing all of users vitamins here)
-        #using relationship to referance name of class
-            #like a list
     notes = db.relationship('Note', backref='user', cascade='all, delete-orphan', lazy='dynamic')
 
-#@blueprint.after_request 
 def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     # Other headers can be added here if needed
     return response
+
+@app.route('/')
+def serve():
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route("/api/dashboard", methods = ['GET'])
 @jwt_required()
@@ -83,7 +63,6 @@ def dashboard():
     return jsonify({'message': 'POST request received successfully'})
 
 @app.route("/api/eval", methods = ['POST', 'GET'])
-#@jwt_required()
 def eval():
 
     #the different types of vitamins
@@ -105,7 +84,6 @@ def eval():
     if not user:
         return jsonify({'message': 'User not found'}), 204
     if request.method == 'POST':
-        #print("User id: " + current_user.id + "\n")
 
         #for evaluating again
         notes = user.notes.all()
@@ -167,7 +145,7 @@ def eval():
             db.session.commit()
 
         #Kalmz
-        if prediction[0][3] == 3:#take more at night
+        if prediction[0][3] == 3:
             new_vitamin = Note(vitamin = "Kalmz", data = "you need 3 capsule before bed and 2 in the morning",description = kalmz_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
@@ -197,14 +175,11 @@ def eval():
             new_vitamin = Note(vitamin = "ReGenerZyme Thyroid", data = "you need 1 capsule before bed",description = thyroid_description, user_id = user.id)
             db.session.add(new_vitamin)
             db.session.commit()
-        
-    #return render_template("eval.html", user = current_user, heart = heart)
+
     return response
 
 @app.route("/api/results")
-#@jwt_required()
 def results():
-    #current_user_id = get_jwt_identity()
 
     refreshToken = request.cookies.get('jwt').strip() if 'jwt' in request.cookies else None
     if not refreshToken:
@@ -214,8 +189,6 @@ def results():
     if not user:
         return jsonify({'message': 'User not found'}), 204
     
-
-    #MAYBE PUT ALL OF IMAGES IN LIST AND RUN FOR LOOP IN HTML SO IMAGES COULD GO TO THE VERY TOP
     new_vitamin = Note.query.filter_by(user_id = user.id).all()
     serialized_data = [{'id': note.id, 'vitamin': note.vitamin, 'data':note.data, 'description':note.description} for note in new_vitamin]
     
@@ -224,7 +197,6 @@ def results():
 #creating our login page
 @app.route("/login", methods = ['GET', 'POST'])
 def login():
-    #getting user input
     if request.method == 'POST':
         data = request.get_json()
         userName = data['user']
@@ -233,12 +205,8 @@ def login():
         #getting emails from database by query to see if any match users input
             #if any do match store in user object
         user = User.query.filter_by(email=userName).first() #gets the first email it matches
-        
-        #if did find user
+
         if user:
-            #hashing both passwords and see if they match
-            #built in function
-            #if check_password_hash(user.password, password):
             if password == user.password:
                 #creating JWT token
                 accessToken = create_access_token(identity=user.id, expires_delta=timedelta(seconds=10))
@@ -246,7 +214,6 @@ def login():
                 newRefreshToken = create_refresh_token(identity=user.id, expires_delta=timedelta(hours=24))
                 if user.refreshToken is None:
                     user.refreshToken = []
-                #HOW TO APPEND TO ARRRAY
                 sql_query = text(
                     """
                     UPDATE "user"
@@ -265,18 +232,13 @@ def login():
                 return response
             #if hashed passwords don't match then
             else:
-                #send 401 error
                 abort(409, description="Incorrect password")
-                #flash('Incorrect password', category = 'error')
         #if there is no email to the one the user inputted then
         else: 
-            #maybe 401 error here too
-            #flash('Email does not exist', category='error')
             abort(409, description="Username does not exist")
 
-    #return render_template("login.html", user = current_user)
     return jsonify({'message': 'POST request received successfully'})
-    #dont really need current_user because we aren't using nav bar here
+
 
 @app.after_request
 def after_request_func(response):
@@ -294,9 +256,6 @@ def after_request_func(response):
         response.headers.add('Access-Control-Allow-Credentials', 'true')
 
     if origin:
-        #DONT ADD have to SET IT like below
-        #response.headers.add('Access-Control-Allow-Origin', origin)
-        
         response.headers['Access-Control-Allow-Origin'] = origin
 
     return response
@@ -306,11 +265,8 @@ def after_request_func(response):
 def register():
     
     data = request.get_json()
-    #print(data['user'])
-    #print(data)
-    # Process the data as needed
     response =  jsonify({'message': 'POST request received successfully'})
-    #response.headers.add("Access-Control-Allow-Origin", "*")
+    
     
     
     if request.method == 'POST':
@@ -318,7 +274,6 @@ def register():
         userName = data['user']
         name = "Joe"
         password1 = data['pwd']
-        #name = request.form.get('name')
 
         #checking to see if email already exist by comparing it to all emails in database
         user = User.query.filter_by(email=userName).first()
@@ -326,10 +281,7 @@ def register():
         #if inputted an already exisisting email in database
         if user:
             abort(409, description="Username already exists")
-            #flash('Email already exists', category = 'error')
         else:
-            #creating new user object by using User class
-                #hashing password 'sha256' hashing algorith
             #if user definately not exist then put them in database
                 #if an account email doesn't have the same email then make database
             if db.session.query(User).filter_by(email=userName).count() < 1:
@@ -338,29 +290,18 @@ def register():
                 db.session.add(new_user)
                 db.session.commit()
 
-                #sets up user id
-                #login_user(new_user, remember=True)
-                #flash("Account created", category="success")
-                #return redirect("/home")
     
     return response
-    #return render_template("register.html", user = current_user)
-    #don't really need current_user here because we're not showing navbar
 
-#refreshing tokens
 
 @app.route('/refresh', methods=['GET'])
 def refresh():
     #getting the newRefreshToken
     refreshToken = request.cookies.get('jwt').strip() if 'jwt' in request.cookies else None
-    print("\n\n" + refreshToken + "\n\n")
-    #user = User.query.filter_by(refreshToken=refreshToken).first()
+    
     user = User.query.filter(User.refreshToken.any(refreshToken)).first()
     
     if user:
-
-        print(user)
-        print(user.id)
 
         accessToken = create_access_token(identity=user.id, expires_delta=timedelta(seconds=10))
 
@@ -385,7 +326,6 @@ def refresh():
         response.set_cookie('jwt', newRefreshToken, httponly=True, secure=True, samesite='None', max_age=24 * 60 * 60)
         return response
     else:
-        print(user)
         return jsonify({'error': 'error'})
     
 @app.route("/logout", methods=["GET"])
@@ -414,4 +354,4 @@ if __name__ == '__main__':
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SECURITY_PASSWORD_HASH'] = 'bcrypt'  # or another supported method
     app.config['SECURITY_PASSWORD_SALT'] = 'abc'
-    app.run(debug=True, port = 9000)
+    app.run(debug=True, port = 8000)

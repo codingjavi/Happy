@@ -19,6 +19,7 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 /* 
+notes: 
 fix login and registering styling like dave
 
 add section for all the vitamins
