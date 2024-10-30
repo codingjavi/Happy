@@ -354,4 +354,4 @@ if __name__ == '__main__':
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SECURITY_PASSWORD_HASH'] = 'bcrypt'  # or another supported method
     app.config['SECURITY_PASSWORD_SALT'] = 'abc'
-    app.run(debug=True, port = 8000)
+    app.run(debug=True, port = 9000)
